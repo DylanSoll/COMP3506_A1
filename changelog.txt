@@ -1,0 +1,19 @@
+---
+
+v1.1: Removed the "= 0;" on the BitVector capacity final variable:
+
+- private final long capacity = 0;
++ private final long capacity;
+
+---
+
+v1.2: Fixed comment on the removeFirst method in the DoublyLinkedList class.
+
+-     * Removes the first element if it exists, returning true if successful,
+-     * and false otherwise.
++     * Finds and removes the first matching element, returning true if
++     * successful and false otherwise.
++     * Does nothing to the list if there is no such element
+
+---
+
