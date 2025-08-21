@@ -2,6 +2,8 @@
 
 package uq.comp3506.a1.structures;
 
+import java.lang.reflect.Array;
+
 /**
  * Supplied by the COMP3506/7505 teaching team, Semester 2, 2025.
  *
@@ -9,6 +11,10 @@ package uq.comp3506.a1.structures;
  * ListInterface.java file - this explains some of the required functionality.
  */
 public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
+    /**
+     * Default capacity of the dynamic array
+     */
+    private static final int INIT_CAPACITY = 8;
 
     /**
      * size tracks the total number of slots being used in the data array
@@ -26,22 +32,28 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
     private T[] data;
 
     /**
+     * The offset for index 0 to allow for O(1*) prepending
+     * Default is half the initial capacity to allow for equal prepend and append
+     */
+    private int start;
+
+    /**
      * Constructs an empty Dynamic Array
      */
     public DynamicArray() {
-        // XXX todo
+        clear(); // clear reinitialises the array to its default initial parameters
     }
 
     // See ListInterface
     @Override
     public int size() {
-        return -1;
+        return this.size;
     }
 
     // See ListInterface
     @Override
     public boolean isEmpty() {
-        return false;
+        return this.size == 0;
     }
 
     /**
@@ -51,7 +63,7 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
      * testing it explicitly.
      */
     public boolean isFull() {
-        return false;
+        return this.size == capacity;
     }
 
     /**
@@ -60,7 +72,7 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
      * be testing it explicitly.
      */
     public int getCapacity() {
-        return -1;
+        return capacity;
     }
 
     /**
@@ -71,8 +83,12 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
      */
     @Override
     public boolean append(T element) {
-
-        return false;
+        if (isFull() || (this.size + start + 1 >= capacity)) {
+            resize(capacity * 2);
+        }
+        data[start + this.size] = element;
+        this.size++;
+        return true;
     }
 
     /**
@@ -83,8 +99,13 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
      */
     @Override
     public boolean prepend(T element) {
-
-        return false;
+        if (isFull() || (start == 0)) {
+            resize(capacity * 2);
+        }
+        data[start - 1] = element;
+        --start;
+        this.size++;
+        return true;
     }
 
     /**
@@ -110,8 +131,10 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
      */
     @Override
     public T get(int ix) {
-
-        return null;
+        if (ix < 0 || ix >= this.size) {
+            throw new IndexOutOfBoundsException();
+        }
+        return data[start + ix];
     }
 
     /**
@@ -121,8 +144,12 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
      */
     @Override
     public T set(int ix, T element) {
-
-        return null;
+        if (ix < 0 || ix >= this.size) {
+            throw new IndexOutOfBoundsException();
+        }
+        T old = data[start + ix];
+        data[start + ix] = element;
+        return old;
     }
 
     /**
@@ -150,7 +177,10 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
 
     @Override
     public void clear() {
-
+        this.size = 0;
+        capacity = INIT_CAPACITY;
+        data = (T[]) new Comparable[capacity];
+        start = capacity / 2;
     }
 
     /**
@@ -171,5 +201,24 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
      */
     public void sort() {
 
+    }
+
+    private boolean resize(int newCapacity) {
+        if (newCapacity <= this.size) {
+            return false; // do not remove data
+        }
+        capacity = newCapacity;
+        int newStart = capacity / 2;
+        if (start >= 2) {
+            newStart = start;
+        }
+        T[] newData = (T[]) new Comparable[capacity];
+
+        for (int i = 0; i < this.size; i++) {
+            newData[newStart + i] = data[start + i];
+        }
+        data = newData;
+        start = newStart;
+        return true;
     }
 }
