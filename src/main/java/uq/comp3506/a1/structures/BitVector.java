@@ -30,7 +30,8 @@ public class BitVector {
      * Constructs a bitvector, pre-allocating enough memory to store `size` bits
      */
     public BitVector(long size) {
-        this.size = -1;
+        this.size = size;
+        this.capacity = size;
         // XXX todo
     }
 
