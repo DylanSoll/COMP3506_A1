@@ -6,44 +6,172 @@ import org.junit.Assert;
 import org.junit.Test;
 import uq.comp3506.a1.structures.DynamicArray;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.stream.Stream;
+
 public class TestDynamicArray {
-    public static void main(String[] args) {
-        System.out.println("Testing DynamicArray Class...");
-        System.out.println("Success!");
+    private final Random rand = new Random();
+
+    private static void areContentsEqual(List<?> testArr, DynamicArray<?> arr) {
+        Assert.assertEquals(testArr.size(), arr.size());
+        for (int i = 0; i < testArr.size(); i++) {
+            Assert.assertTrue(arr.get(i).equals(testArr.get(i)));
+        }
     }
 
     @Test
     public void TestSize() {
+        int size = 150;
         DynamicArray<Integer> arr = new DynamicArray<>();
-        int iter = 20;
-        for (int i = 0; i < iter; i++) {
-            Assert.assertTrue(arr.append(i * 2));
-        }
-        Assert.assertEquals(iter, arr.size());
+        ArrayList<Integer> testArr = new ArrayList<>(60);
+        Stream.generate(rand::nextInt)
+                .limit(size).forEach((x) -> {
+                    arr.append(x);
+                    testArr.add(x);
+                });
+        Assert.assertEquals(size, arr.size());
     }
 
     @Test
     public void TestAppend() {
+        int size = 150;
         DynamicArray<Integer> arr = new DynamicArray<>();
-        int iter = 20;
-        for (int i = 0; i < iter; i++) {
-            Assert.assertTrue(arr.append(i * 2 - 1));
-        }
-        for (int i = 0; i < iter; i++) {
-            Assert.assertEquals(i * 2 - 1, (int) arr.get(i));
-        }
+        ArrayList<Integer> testArr = new ArrayList<>(60);
+        Stream.generate(rand::nextInt)
+                .limit(size).forEach((x) -> {
+                    arr.append(x);
+                    testArr.add(x);
+        });
+        areContentsEqual(testArr, arr);
     }
 
     @Test
     public void TestPrepend() {
+        int size = 150;
         DynamicArray<Integer> arr = new DynamicArray<>();
-        int iter = 20;
-        for (int i = 0; i < iter; i++) {
-            Assert.assertTrue(arr.prepend(i * 2 - 1));
+        ArrayList<Integer> testArr = new ArrayList<>(60);
+        Stream.generate(rand::nextInt)
+                .limit(size).forEach((x) -> {
+                    arr.prepend(x);
+                    testArr.addFirst(x);
+                });
+        areContentsEqual(testArr, arr);
+    }
+
+    @Test
+    public void TestPrependAndAppend() {
+        int size = 150;
+        DynamicArray<Integer> arr = new DynamicArray<>();
+        ArrayList<Integer> testArr = new ArrayList<>();
+        for (int i = 5; i > 0; i--) {
+            Stream.generate(rand::nextInt)
+                    .limit(size / i).forEach((x) -> {
+                        arr.prepend(x);
+                        testArr.addFirst(x);
+                    });
+            Stream.generate(rand::nextInt)
+                    .limit(size / i).forEach((x) -> {
+                        arr.append(x);
+                        testArr.add(x);
+                    });
         }
-        for (int i = iter - 1; i >= 0; i--) {
-            Assert.assertEquals(i * 2 - 1, (int) arr.get(iter - i - 1));
+        areContentsEqual(testArr, arr);
+    }
+
+    @Test
+    public void TestGet() {
+        int size = 150;
+        DynamicArray<Integer> arr = new DynamicArray<>();
+        ArrayList<Integer> testArr = new ArrayList<>();
+        for (int i = 5; i > 0; i--) {
+            Stream.generate(rand::nextInt)
+                    .limit(size / i).forEach((x) -> {
+                        arr.prepend(x);
+                        testArr.addFirst(x);
+                    });
+        }
+        // ensures get returns the correct element and have the same size
+        areContentsEqual(testArr, arr);
+        int currSize = testArr.size();
+        int testIndices[] = {-1, currSize, currSize + 1, currSize * currSize};
+        for (int ix: testIndices) {
+            Assert.assertThrows(IndexOutOfBoundsException.class, () -> {arr.get(ix);});
         }
     }
 
+    @Test
+    public void TestRemove() {
+        for (int i = 1; i <= 10; i++) {
+            int size = 150 * i;
+            DynamicArray<Integer> arr = new DynamicArray<>();
+            ArrayList<Integer> testArr = new ArrayList<>();
+            Stream.generate(rand::nextInt)
+                    .limit(size).forEach((x) -> {
+                        arr.append(x);
+                        testArr.add(x);
+                    });
+            // ensures get returns the correct element and have the same size
+            areContentsEqual(testArr, arr);
+            int minSize = rand.nextInt(testArr.size() - 1);
+
+            while (testArr.size() > minSize) {
+                int ix = Math.max(rand.nextInt(testArr.size() - 1), 0);
+                Assert.assertEquals(testArr.remove(ix), arr.remove(ix));
+            }
+            Assert.assertEquals(testArr.size(), arr.size());
+        }
+    }
+
+    @Test
+    public void TestRemoveSimple() {
+        DynamicArray<Integer> arr = new DynamicArray<>();
+        ArrayList<Integer> testArr = new ArrayList<>();
+        for (int i = 0; i < 200; i++) {
+            arr.append(i * 3 - 1);
+            testArr.add(i * 3 - 1);
+        }
+        arr.print();
+        System.out.println(testArr.toString());
+        for (int i = 0; i < 100; i++) {
+            Assert.assertEquals(arr.remove(i), testArr.remove(i));
+            //System.out.println();
+            //System.out.println(testArr.remove(i));
+            //arr.print();
+            //System.out.println(testArr.toString());
+        }
+        arr.print();
+        System.out.println(testArr.toString());
+        for (int i = 0; i < 100; i++) {
+            int pos = arr.size() - 1;
+            Assert.assertEquals(testArr.remove(pos), arr.remove(pos));
+        }
+        //arr.print();
+    }
+
+    @Test
+    public void TestRemoveFirst() {
+        for (int i = 1; i <= 10; i++) {
+            int size = 100 * i;
+            DynamicArray<Integer> arr = new DynamicArray<>();
+            ArrayList<Integer> testArr = new ArrayList<>();
+            Stream.generate(() -> {return rand.nextInt(50);})
+                    .limit(size).forEach((x) -> {
+                        arr.append(x);
+                        testArr.add(x);
+                    });
+            // ensures get returns the correct element and have the same size
+            areContentsEqual(testArr, arr);
+            int minSize = rand.nextInt(testArr.size() / 2 - 1);
+
+            while (testArr.size() > minSize) {
+                int ix = Math.max(rand.nextInt(testArr.size() - 1), 0);
+                int pos = testArr.indexOf(testArr.get(ix));
+                Assert.assertTrue(arr.removeFirst(testArr.remove(pos)));
+                areContentsEqual(testArr, arr);
+            }
+            Assert.assertEquals(testArr.size(), arr.size());
+        }
+    }
 }

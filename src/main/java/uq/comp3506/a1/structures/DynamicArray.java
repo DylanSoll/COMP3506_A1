@@ -120,7 +120,15 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
      */
     @Override
     public boolean add(int ix, T element) {
-
+        throw_index_error_if_oob(ix);
+        if (ix == 0) {
+            prepend(element);
+            return true;
+        }
+        if (ix == this.size) {
+            append(element);
+            return true;
+        }
         return false;
     }
 
@@ -131,9 +139,7 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
      */
     @Override
     public T get(int ix) {
-        if (ix < 0 || ix >= this.size) {
-            throw new IndexOutOfBoundsException();
-        }
+        throw_index_error_if_oob(ix);
         return data[start + ix];
     }
 
@@ -144,9 +150,7 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
      */
     @Override
     public T set(int ix, T element) {
-        if (ix < 0 || ix >= this.size) {
-            throw new IndexOutOfBoundsException();
-        }
+        throw_index_error_if_oob(ix);
         T old = data[start + ix];
         data[start + ix] = element;
         return old;
@@ -159,8 +163,30 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
      */
     @Override
     public T remove(int ix) {
-
-        return null;
+        throw_index_error_if_oob(ix);
+        int pos = ix + start;
+        T value = data[pos];
+        data[pos] = null;
+        if (ix == 0 || ix == this.size) {
+            this.size--;
+            if (ix == 0) {
+                this.start++;
+            }
+            return value;
+        }
+        if (ix >= (this.size / 2)) {
+            for (int i = pos + 1; i < this.size + start; i++) {
+                data[i - 1] = data[i];
+            }
+            data[this.size + start - 1] = null;
+        } else {
+            for (int i = pos; i > 0; i--) {
+                data[i] = data[i - 1];
+            }
+            data[start++] = null;
+        }
+        size--;
+        return value;
     }
 
     /**
@@ -171,8 +197,22 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
      */
     @Override
     public boolean removeFirst(T t) {
-
-        return false;
+        if (size == 0) {
+            return false;
+        }
+        boolean found = false;
+        int ix = 0;
+        for (; ix < this.size; ix++) {
+            if (t.equals(data[ix + start])) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            return false;
+        }
+        remove(ix);
+        return true;
     }
 
     @Override
@@ -220,5 +260,39 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
         data = newData;
         start = newStart;
         return true;
+    }
+
+    private void throw_index_error_if_oob(int ix) {
+        if (ix < 0 || ix >= this.size) {
+            throw new IndexOutOfBoundsException();
+        }
+    }
+
+    public void print() {
+        System.out.print("[");
+        for (int i = 0; i < this.size; i++) {
+            if (i != 0) {
+                System.out.print(", ");
+            }
+            System.out.print(data[start + i]);
+        }
+        System.out.print("]\n");
+    }
+
+    public static void main(String[] args) {
+        DynamicArray<Integer> arr = new DynamicArray<>();
+        for (int i = 0; i < 20; i++) {
+            arr.append(i * 3 - 1);
+        }
+        arr.print();
+        for (int i = 0; i < 10; i++) {
+            System.out.println(arr.remove(0));
+            arr.print();
+        }
+        for (int i = 0; i < 10; i++) {
+            System.out.println(arr.remove(arr.size() - 1));
+            arr.print();
+        }
+        arr.print();
     }
 }
