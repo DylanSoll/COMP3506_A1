@@ -35,7 +35,7 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
      * The offset for index 0 to allow for O(1*) prepending
      * Default is half the initial capacity to allow for equal prepend and append
      */
-    private int start;
+    public int start;
 
     /**
      * Constructs an empty Dynamic Array
@@ -99,7 +99,7 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
      */
     @Override
     public boolean prepend(T element) {
-        if (isFull() || (start == 0)) {
+        if (is_start_full() || isFull()) {
             resize(capacity * 2);
         }
         data[start - 1] = element;
@@ -120,7 +120,7 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
      */
     @Override
     public boolean add(int ix, T element) {
-        throw_index_error_if_oob(ix);
+        throw_index_error_if_oob_inclusive(ix);
         if (ix == 0) {
             prepend(element);
             return true;
@@ -129,7 +129,31 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
             append(element);
             return true;
         }
-        return false;
+        if (isFull()) {
+            resize(capacity * 2);
+        }
+        int pos = ix + start;
+        if (ix <= (this.size / 2)) {
+            if (is_start_full()) {
+                resize(capacity * 2);
+                pos = ix + start;
+            }
+            for (int i = --start; i < pos; i++) {
+                data[i] = data[i + 1];
+            }
+            data[pos - 1] = element;
+        } else {
+            if (is_end_full()) {
+                resize(capacity * 2);
+                pos = ix + start;
+            }
+            for (int i = size + start; i > pos; i--) {
+                data[i] = data[i - 1];
+            }
+            data[pos] = element;
+        }
+        size++;
+        return true;
     }
 
     /**
@@ -264,7 +288,13 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
 
     private void throw_index_error_if_oob(int ix) {
         if (ix < 0 || ix >= this.size) {
-            throw new IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException("Index " + ix + " is out of bounds.");
+        }
+    }
+
+    private void throw_index_error_if_oob_inclusive(int ix) {
+        if (ix < 0 || ix > this.size) {
+            throw new IndexOutOfBoundsException("Index " + ix + " is out of bounds.");
         }
     }
 
@@ -294,5 +324,13 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
             arr.print();
         }
         arr.print();
+    }
+
+    private boolean is_start_full() {
+        return start == 0;
+    }
+
+    private boolean is_end_full() {
+        return this.size + start == capacity;
     }
 }

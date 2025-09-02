@@ -125,28 +125,26 @@ public class TestDynamicArray {
     }
 
     @Test
-    public void TestRemoveSimple() {
+    public void TestAdd() {
+        int size = 10_000;
         DynamicArray<Integer> arr = new DynamicArray<>();
         ArrayList<Integer> testArr = new ArrayList<>();
-        for (int i = 0; i < 200; i++) {
-            arr.append(i * 3 - 1);
-            testArr.add(i * 3 - 1);
-        }
-        arr.print();
-        System.out.println(testArr.toString());
-        for (int i = 0; i < 100; i++) {
-            Assert.assertEquals(arr.remove(i), testArr.remove(i));
-            //System.out.println();
-            //System.out.println(testArr.remove(i));
-            //arr.print();
-            //System.out.println(testArr.toString());
-        }
-        arr.print();
-        System.out.println(testArr.toString());
-        for (int i = 0; i < 100; i++) {
-            int pos = arr.size() - 1;
-            Assert.assertEquals(testArr.remove(pos), arr.remove(pos));
-        }
+
+        Stream.generate(() -> {return rand.nextInt(50);})
+                .limit(size).forEach((x) -> {
+                    Stream<Integer> ixGen = Stream.generate(()-> {
+                        return rand.nextInt(0, testArr.size() + 1);
+                    });
+                    int ix = ixGen.iterator().next();
+
+                    // System.out.println(List.of(ix, x, arr.size(), arr.getCapacity(), arr.start + ix, arr.start));
+                    testArr.add(ix, x);
+                    arr.add(ix, x);
+                    // arr.print();
+                    // System.out.println(testArr.toString());
+
+                });
+        areContentsEqual(testArr, arr);
         //arr.print();
     }
 
