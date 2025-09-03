@@ -2,8 +2,6 @@
 
 package uq.comp3506.a1.structures;
 
-import java.lang.reflect.Array;
-
 /**
  * Supplied by the COMP3506/7505 teaching team, Semester 2, 2025.
  *
@@ -35,7 +33,7 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
      * The offset for index 0 to allow for O(1*) prepending
      * Default is half the initial capacity to allow for equal prepend and append
      */
-    public int start;
+    private int start;
 
     /**
      * Constructs an empty Dynamic Array
@@ -99,7 +97,7 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
      */
     @Override
     public boolean prepend(T element) {
-        if (is_start_full() || isFull()) {
+        if (isStartFull() || isFull()) {
             resize(capacity * 2);
         }
         data[start - 1] = element;
@@ -134,7 +132,7 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
         }
         int pos = ix + start;
         if (ix <= (this.size / 2)) {
-            if (is_start_full()) {
+            if (isStartFull()) {
                 resize(capacity * 2);
                 pos = ix + start;
             }
@@ -143,7 +141,7 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
             }
             data[pos - 1] = element;
         } else {
-            if (is_end_full()) {
+            if (isEndFull()) {
                 resize(capacity * 2);
                 pos = ix + start;
             }
@@ -264,7 +262,9 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
      * like: if (data[i].compareTo(data[j]) < 0) { // data[i] < data[j] }
      */
     public void sort() {
-
+        System.out.println(start);
+        quickSort(start, start + size - 1);
+        System.out.println(start);
     }
 
     private boolean resize(int newCapacity) {
@@ -326,11 +326,52 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
         arr.print();
     }
 
-    private boolean is_start_full() {
+    private boolean isStartFull() {
         return start == 0;
     }
 
-    private boolean is_end_full() {
+    private boolean isEndFull() {
         return this.size + start == capacity;
     }
+
+    private void quickSort(int low, int high) {
+        if (low >= high) {
+            return;
+        }
+        int pivot = (low + high) / 2; // not random pivot but should work
+        T x = data[pivot];
+        int l = low;
+        int h = high;
+        while (low < high) {
+            if (data[low].compareTo(x) < 0) {
+                low++;
+            } else if (data[high].compareTo(x) >= 0) {
+                high--;
+            } else {
+                T temp = data[low];
+                data[low] = data[high];
+                data[high] = temp;
+                low++;
+                high--;
+            }
+        }
+        quickSort(l, low - 1);
+        quickSort(high + 1, h);
+    }
+
+    public boolean isSorted() {
+
+        if (isEmpty()) {
+            return true;
+        }
+        T prev = data[start];
+        for (int i = start + 1; i < size + start; i++) {
+            if (data[i].compareTo(prev) < 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
 }
