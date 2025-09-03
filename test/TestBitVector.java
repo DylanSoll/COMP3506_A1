@@ -33,4 +33,115 @@ public class TestBitVector {
         vec = new BitVector(15331L);
         Assert.assertEquals(BitVector.BitsPerElement * ((long) Math.ceil(((double) (15331L) / BitVector.BitsPerElement))), vec.capacity());
     }
+
+    @Test
+    public void testComp() {
+        BitVector vec = new BitVector(30);
+        vec.complement();
+        for (int i = 0; i < 30; i++) {
+            Assert.assertTrue(vec.get(i));
+        }
+    }
+
+    @Test
+    public void testSetSimple() {
+        BitVector vec = new BitVector(30);
+        vec.set(0);
+        vec.set(2);
+        vec.set(4);
+        Assert.assertTrue(vec.get(0));
+        Assert.assertTrue(vec.get(2));
+        Assert.assertTrue(vec.get(4));
+        Assert.assertFalse(vec.get(1));
+        Assert.assertFalse(vec.get(3));
+        Assert.assertFalse(vec.get(5));
+    }
+
+    @Test
+    public void testSetAboveBitSize() {
+        long size = BitVector.BitsPerElement + BitVector.BitsPerElement / 2;
+        BitVector vec = new BitVector(size);
+        Assert.assertEquals(size, vec.size());
+        Assert.assertEquals(BitVector.BitsPerElement *  ((long) Math.ceil(((double) (size) / BitVector.BitsPerElement))), vec.capacity());
+        vec.set(0);
+        vec.set(2);
+        vec.set(4);
+        vec.set(6 + BitVector.BitsPerElement);
+        vec.set(8 + BitVector.BitsPerElement);
+        vec.set(10 + BitVector.BitsPerElement);
+        Assert.assertTrue(vec.get(0));
+        Assert.assertTrue(vec.get(2));
+        Assert.assertTrue(vec.get(4));
+        Assert.assertFalse(vec.get(1));
+        Assert.assertFalse(vec.get(3));
+        for (int i = 5; i < 6 + BitVector.BitsPerElement; i++) {
+            Assert.assertFalse(vec.get(i));
+        }
+        Assert.assertTrue(vec.get(6 + BitVector.BitsPerElement));
+        Assert.assertTrue(vec.get(8 + BitVector.BitsPerElement));
+        Assert.assertTrue(vec.get(10 + BitVector.BitsPerElement));
+        Assert.assertFalse(vec.get(7 + BitVector.BitsPerElement));
+        Assert.assertFalse(vec.get(9 + BitVector.BitsPerElement));
+        Assert.assertFalse(vec.get(11 + BitVector.BitsPerElement));
+    }
+
+    @Test
+    public void testUnsetSimple() {
+        BitVector vec = new BitVector(30);
+        vec.set(0);
+        vec.set(2);
+        vec.set(4);
+        Assert.assertTrue(vec.get(0));
+        Assert.assertTrue(vec.get(2));
+        Assert.assertTrue(vec.get(4));
+        Assert.assertFalse(vec.get(1));
+        Assert.assertFalse(vec.get(3));
+        Assert.assertFalse(vec.get(5));
+        vec.unset(2);
+        Assert.assertTrue(vec.get(0));
+        Assert.assertTrue(vec.get(4));
+        Assert.assertFalse(vec.get(1));
+        Assert.assertFalse(vec.get(2));
+        Assert.assertFalse(vec.get(3));
+        Assert.assertFalse(vec.get(5));
+    }
+
+    @Test
+    public void testUnsetAboveBitSize() {
+        long size = BitVector.BitsPerElement + BitVector.BitsPerElement / 2;
+        BitVector vec = new BitVector(size);
+        Assert.assertEquals(size, vec.size());
+        Assert.assertEquals(BitVector.BitsPerElement *  ((long) Math.ceil(((double) (size) / BitVector.BitsPerElement))), vec.capacity());
+        vec.set(0);
+        vec.set(2);
+        vec.set(4);
+        vec.set(6 + BitVector.BitsPerElement);
+        vec.set(8 + BitVector.BitsPerElement);
+        vec.set(10 + BitVector.BitsPerElement);
+        Assert.assertTrue(vec.get(0));
+        Assert.assertTrue(vec.get(2));
+        Assert.assertTrue(vec.get(4));
+        Assert.assertFalse(vec.get(1));
+        Assert.assertFalse(vec.get(3));
+        for (int i = 5; i < 6 + BitVector.BitsPerElement; i++) {
+            Assert.assertFalse(vec.get(i));
+        }
+        Assert.assertTrue(vec.get(6 + BitVector.BitsPerElement));
+        Assert.assertTrue(vec.get(8 + BitVector.BitsPerElement));
+        Assert.assertTrue(vec.get(10 + BitVector.BitsPerElement));
+        Assert.assertFalse(vec.get(7 + BitVector.BitsPerElement));
+        Assert.assertFalse(vec.get(9 + BitVector.BitsPerElement));
+        Assert.assertFalse(vec.get(11 + BitVector.BitsPerElement));
+        vec.unset(4);
+        vec.unset(6 + BitVector.BitsPerElement);
+        Assert.assertTrue(vec.get(0));
+        Assert.assertTrue(vec.get(2));
+        for (int i = 3; i < 8 + BitVector.BitsPerElement; i++) {
+            Assert.assertFalse(vec.get(i));
+        }
+        Assert.assertTrue(vec.get(8 + BitVector.BitsPerElement));
+        Assert.assertTrue(vec.get(10 + BitVector.BitsPerElement));
+        Assert.assertFalse(vec.get(9 + BitVector.BitsPerElement));
+        Assert.assertFalse(vec.get(11 + BitVector.BitsPerElement));
+    }
 }
