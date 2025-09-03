@@ -213,5 +213,43 @@ public class TestDoublyLinkedList {
         Assert.assertNull(dll.getLast());
     }
 
+    @Test
+    public void testAddSingle() {
+        DoublyLinkedList<Integer> dll = new DoublyLinkedList<>();
+        dll.add(0, 2);
+        Assert.assertEquals(1, dll.size());
+        Assert.assertEquals(2, (int) dll.get(0));
+    }
 
+    @Test
+    public void testAddMultiple() {
+        DoublyLinkedList<Integer> dll = new DoublyLinkedList<>();
+        dll.add(0, 2); // 2
+        dll.add(0, 1); // 1, 2
+        dll.add(0, 3); // 3, 1, 2
+        dll.add(1, 5); // 3, 5, 1, 2
+        Assert.assertEquals(4, dll.size());
+        dll.add(4, 4); // 3, 5, 1, 2, 4
+        Assert.assertEquals(5, dll.size());
+        Assert.assertEquals(3, (int) dll.get(0));
+        Assert.assertEquals(5, (int) dll.get(1));
+        Assert.assertEquals(1, (int) dll.get(2));
+        Assert.assertEquals(2, (int) dll.get(3));
+        Assert.assertEquals(4, (int) dll.get(4));
+    }
+
+    @Test
+    public void testAddRand() {
+        int size = 2000;
+        int lowBound = 0;
+        int highBound = 20;
+        DoublyLinkedList<Integer> dll = new DoublyLinkedList<>();
+        LinkedList<Integer> tdll = new LinkedList<>();
+        Stream.generate(() -> rand.nextInt(lowBound, highBound))
+                .limit(size).forEach((x) -> {
+                    tdll.add(x);
+                    dll.append(x);
+                });
+        areContentsEqual(tdll, dll);
+    }
 }
