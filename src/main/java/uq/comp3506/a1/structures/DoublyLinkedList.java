@@ -58,13 +58,8 @@ public class DoublyLinkedList<T> implements ListInterface<T> {
     @Override // See ListInterface
     public T get(int idx) {
         checkBounds(idx, true);
-        int curIdx = 0;
-        Node cur = this.head;
-        while (cur != null && curIdx != idx) {
-            cur = cur.getNext();
-            curIdx++;
-        }
-        return cur.getData();
+        Node cur = getNode(idx);
+        return (cur == null) ? null : cur.getData();
     }
 
 
@@ -74,10 +69,7 @@ public class DoublyLinkedList<T> implements ListInterface<T> {
      */
     @Override // See ListInterface
     public T set(int idx, T t) {
-        Node cur = head;
-        while (idx > 0) {
-            cur = cur.getNext();
-        }
+        Node cur = getNode(idx);
         T oldData = cur.getData();
         cur.setData(t);
         return oldData;
