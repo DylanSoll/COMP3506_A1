@@ -148,6 +148,24 @@ public class BitVector {
             data[len - 1] &= unsetMask;
             return;
         }
+        dist *= -1;
+        int offset = (int) (dist / BitsPerElement);
+        for (int i = 0; i < offset; i++) {
+            data[i] = 0;
+        }
+        int shift = (int) (dist - ((long) offset * (long) BitsPerElement));
+        for (int i = offset; i < len - 1; i++) {
+            data[i - offset] = data[i] >>> shift;
+
+            data[i - offset] |= (data[i] << (BitsPerElement - shift));
+        }
+        data[len - 1] &= unsetMask;
+
+        data[0] = data[offset] >>> shift;
+        for (int i = len - 1 - offset; i < len - 1; i++) {
+            data[i] = 0;
+        }
+        data[len - 1] &= unsetMask;
     }
  
     /**
