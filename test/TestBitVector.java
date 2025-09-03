@@ -41,6 +41,7 @@ public class TestBitVector {
         for (int i = 0; i < 30; i++) {
             Assert.assertTrue(vec.get(i));
         }
+        vec.print();
     }
 
     @Test
@@ -143,5 +144,26 @@ public class TestBitVector {
         Assert.assertTrue(vec.get(10 + BitVector.BitsPerElement));
         Assert.assertFalse(vec.get(9 + BitVector.BitsPerElement));
         Assert.assertFalse(vec.get(11 + BitVector.BitsPerElement));
+    }
+
+    @Test
+    public void testLeftShiftSimple() {
+        BitVector vec = new BitVector(24);
+        vec.set(0);
+        vec.set(2);
+        vec.set(4);
+        vec.set(5);
+        vec.set(9);
+        vec.print();
+        vec.shift(1);
+        vec.print();
+        vec.shift(1);
+        vec.print();
+        vec.shift(5);
+        vec.print();
+        for (int i = 0; i < 24; i++) {
+            vec.shift(1);
+            vec.print();
+        }
     }
 }
