@@ -241,15 +241,71 @@ public class TestDoublyLinkedList {
     @Test
     public void testAddRand() {
         int size = 2000;
-        int lowBound = 0;
-        int highBound = 20;
         DoublyLinkedList<Integer> dll = new DoublyLinkedList<>();
         LinkedList<Integer> tdll = new LinkedList<>();
-        Stream.generate(() -> rand.nextInt(lowBound, highBound))
+        Stream.generate(rand::nextInt)
+                .limit(size).forEach((x) -> {
+                    int index = rand.nextInt(tdll.size() + 1);
+                    tdll.add(index, x);
+                    dll.add(index, x);
+                });
+        areContentsEqual(tdll, dll);
+    }
+
+    @Test
+    public void testSetSingle() {
+        DoublyLinkedList<Integer> dll = new DoublyLinkedList<>();
+        dll.append(1);
+        Assert.assertEquals(1, (int) dll.set(0, 3506));
+        Assert.assertEquals(3506, (int) dll.set(0, 5));
+        Assert.assertEquals(5, (int) dll.get(0));
+    }
+
+    @Test
+    public void testSetMultiple() {
+        DoublyLinkedList<Integer> dll = new DoublyLinkedList<>();
+        dll.append(1);
+        dll.append(5);
+        dll.append(6);
+        dll.prepend(8); //8, 1, 5, 6
+        Assert.assertEquals(1, (int) dll.set(1, 0));
+        Assert.assertEquals(0, (int) dll.set(1, 3506));
+        Assert.assertEquals(3506, (int) dll.get(1));
+        Assert.assertEquals(5, (int) dll.set(2, 3506));
+        Assert.assertEquals(6, (int) dll.set(3, 3506));
+        /// 8, 3506, 3506, 3506
+        Assert.assertTrue(dll.removeFirst(3506));
+        Assert.assertFalse(dll.removeFirst(6));
+    }
+
+    @Test
+    public void testSetOOB() {
+        DoublyLinkedList<Integer> dll = new DoublyLinkedList<>();
+        Assert.assertThrows(IndexOutOfBoundsException.class, () -> {dll.set(0, 5);});
+        dll.append(7);
+        Assert.assertThrows(IndexOutOfBoundsException.class, () -> {dll.set(1, 5);});
+        Assert.assertThrows(IndexOutOfBoundsException.class, () -> {dll.set(-1, 5);});
+        Assert.assertEquals(7, (int) dll.set(0, 5));
+        Assert.assertEquals(5, (int) dll.get(0));
+    }
+
+    @Test
+    public void testSetRand() {
+        int size = 500;
+        DoublyLinkedList<Integer> dll = new DoublyLinkedList<>();
+        LinkedList<Integer> tdll = new LinkedList<>();
+        Stream.generate(rand::nextInt)
                 .limit(size).forEach((x) -> {
                     tdll.add(x);
                     dll.append(x);
                 });
+        areContentsEqual(tdll, dll);
+        for (int i = 0; i < 4 * size; i++) {
+            int index = rand.nextInt(tdll.size() - 1);
+            int newVal = rand.nextInt();
+            Assert.assertEquals(tdll.set(index, newVal), dll.set(index, newVal));
+            Assert.assertEquals(tdll.get(index), dll.get(index)); // ensure set properly
+        }
         areContentsEqual(tdll, dll);
     }
 }
