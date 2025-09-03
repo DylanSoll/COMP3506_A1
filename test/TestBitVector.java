@@ -166,4 +166,73 @@ public class TestBitVector {
             vec.print();
         }
     }
+
+    @Test
+    public void testLeftShiftSkip() {
+        BitVector vec = new BitVector(24);
+        vec.set(3);
+        vec.set(5);
+        vec.set(6);
+        vec.set(7);
+        vec.set(18);
+        vec.set(19);
+        vec.set(21);
+        vec.print();
+        vec.shift(1);
+        vec.print();
+        vec.shift(10);
+        vec.print();
+        vec.shift(2);
+        vec.print();
+        for (int i = 0; i < 24; i++) {
+            vec.shift(1);
+            vec.print();
+        }
+    }
+
+    @Test
+    public void testRightShiftSimple() {
+        BitVector vec = new BitVector(24);
+        vec.set(24 - 1);
+        vec.set(24 - 2);
+        vec.set(24 - 4);
+        vec.set(24 - 6);
+        vec.set(24 - 9);
+        vec.set(24 - 10);
+        vec.set(24 - 11);
+        vec.print();
+        vec.shift(-1);
+        vec.print();
+        vec.shift(-1);
+        vec.print();
+        vec.shift(-5);
+        vec.print();
+        for (int i = 0; i < 24; i++) {
+            vec.shift(-1);
+            vec.print();
+        }
+    }
+
+    @Test
+    public void testRightShiftSkip() {
+        BitVector vec = new BitVector(24);
+        vec.set(24 - 1);
+        vec.set(24 - 2);
+        vec.set(24 - 4);
+        vec.set(24 - 6);
+        vec.set(24 - 9);
+        vec.set(24 - 10);
+        vec.set(24 - 11);
+        vec.print();
+        vec.shift(-1);
+        vec.print();
+        vec.shift(-10);
+        vec.print();
+        vec.shift(-2);
+        vec.print();
+        for (int i = 0; i < 24; i++) {
+            vec.shift(-1);
+            vec.print();
+        }
+    }
 }
