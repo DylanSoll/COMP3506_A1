@@ -21,6 +21,13 @@ public class BitVector {
     private final long capacity;
 
     /**
+     * Number of longs used to store the bits
+     */
+    private int len;
+
+    private long unsetMask;
+
+    /**
      * We use 'long' instead of 'int' to store elements because it can fit
      * 64 bits instead of 32
      */
@@ -31,7 +38,20 @@ public class BitVector {
      */
     public BitVector(long size) {
         this.size = size;
-        this.capacity = size;
+        len = (int) size / BitVector.BitsPerElement;
+        if (len * BitVector.BitsPerElement < size) {
+            len++;
+        }
+        capacity = len * BitVector.BitsPerElement;
+        this.data = new long[len];
+        for (int i = 0; i < len; i++) {
+            data[i] = 0;
+        }
+        unsetMask = 0;
+        for (int i = 0; i < (size % BitVector.BitsPerElement); i++) {
+            unsetMask <<= 1;
+            unsetMask |= 1;
+        }
         // XXX todo
     }
 
@@ -39,16 +59,14 @@ public class BitVector {
      * Returns the total number of bits that can be used
      */
     public long size() {
-        // TODO: replace with the correct implementation
-        return 0;
+        return size;
     }
 
     /**
      * Returns the total number of bits allocated in the data array
      */
     public long capacity() {
-        // TODO: replace with the correct implementation
-        return 0;
+        return capacity;
     }
 
     /**
@@ -56,7 +74,8 @@ public class BitVector {
      * If the index is out of bounds, you should throw an IndexOutOfBoundsException
      */
     public boolean get(long ix) {
-        return false;
+        checkBounds(ix);
+        return (data[getDataIndex(ix)] & (1L << (ix % BitVector.BitsPerElement))) != 0;
     }
 
     /**
@@ -64,7 +83,8 @@ public class BitVector {
      * If the index is out of bounds, you should throw an IndexOutOfBoundsException
      */
     public void set(long ix) {
-
+        checkBounds(ix);
+        data[getDataIndex(ix)] |= (1L << (ix % BitVector.BitsPerElement));
     }
 
     /**
@@ -72,7 +92,8 @@ public class BitVector {
      * If the index is out of bounds, you should throw an IndexOutOfBoundsException
      */
     public void unset(long ix) {
-
+        checkBounds(ix);
+        data[getDataIndex(ix)] &= ~(1L << (ix % BitVector.BitsPerElement));
     }
 
     /**
@@ -80,7 +101,10 @@ public class BitVector {
      * That means, all 1's become 0's and all 0's become 1's
      */
     public void complement() {
-
+        for (int i = 0; i < len; i++) {
+            data[i] = ~(data[i]);
+        }
+        data[len - 1] &= unsetMask;
     }
 
     /**
@@ -143,6 +167,17 @@ public class BitVector {
     public long runcount() {
 
         return -1;
+    }
+
+    private void checkBounds(long ix) {
+        if (ix < 0 || ix >= size) {
+            throw new IndexOutOfBoundsException("Index " + ix + " is out of bounds.");
+        }
+    }
+
+    private int getDataIndex(long ix) {
+        checkBounds(ix);
+        return (int) (ix / BitsPerElement);
     }
 
 }
