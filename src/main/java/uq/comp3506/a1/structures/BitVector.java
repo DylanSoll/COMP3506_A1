@@ -47,12 +47,7 @@ public class BitVector {
         for (int i = 0; i < len; i++) {
             data[i] = 0;
         }
-        unsetMask = 0;
-        for (int i = 0; i < (size % BitVector.BitsPerElement); i++) {
-            unsetMask <<= 1;
-            unsetMask |= 1;
-        }
-        // XXX todo
+        unsetMask = getMask((int) (size) % BitVector.BitsPerElement);
     }
 
     /**
@@ -180,4 +175,15 @@ public class BitVector {
         return (int) (ix / BitsPerElement);
     }
 
+    private long getMask(int relIx) {
+        if (relIx < 0 || relIx >= BitsPerElement) {
+            throw new IndexOutOfBoundsException("Index " + relIx + " is out of bounds.");
+        }
+        long val = 0;
+        for (int i = 0; i < relIx; i++) {
+            val <<= 1;
+            val |= 1;
+        }
+        return val;
+    }
 }
