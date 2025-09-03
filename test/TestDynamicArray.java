@@ -137,11 +137,8 @@ public class TestDynamicArray {
                     });
                     int ix = ixGen.iterator().next();
 
-                    // System.out.println(List.of(ix, x, arr.size(), arr.getCapacity(), arr.start + ix, arr.start));
                     testArr.add(ix, x);
                     arr.add(ix, x);
-                    // arr.print();
-                    // System.out.println(testArr.toString());
 
                 });
         areContentsEqual(testArr, arr);
@@ -171,5 +168,18 @@ public class TestDynamicArray {
             }
             Assert.assertEquals(testArr.size(), arr.size());
         }
+    }
+
+    @Test
+    public void testSort() {
+        DynamicArray<Integer> arr = new DynamicArray<>();
+        ArrayList<Integer> tarr = new ArrayList<>();
+        for (int x : List.of(0, 1, 5, 7, 12, 1, 5, 2, 1, 6, 2, 6, 3, 6)) {
+            arr.append(x);
+            tarr.add(x);
+        }
+        tarr.sort(Integer::compareTo);
+        arr.sort();
+        areContentsEqual(tarr, arr);
     }
 }
