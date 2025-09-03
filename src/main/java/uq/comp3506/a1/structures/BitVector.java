@@ -120,7 +120,34 @@ public class BitVector {
      * The bits that "fall off" are always replaced with 0's.
      */
     public void shift(long dist) {
-
+        if (dist == 0) {
+            return;
+        }
+        if (dist >= size || -1 * dist >= size) {
+            this.clear();
+            return;
+        }
+        if (dist > 0) {
+            int offset = (int) (dist / BitsPerElement);
+            for (int i = len - offset; i < len; i++) {
+                data[i] = 0;
+            }
+            int shift = (int) (dist - ((long) offset * (long) BitsPerElement));
+            for (int i = len - 1; i > offset; i--) {
+                data[i] = data[i - offset] << shift;
+                if (i == len - 1) {
+                    data[i] &= unsetMask;
+                    continue;
+                }
+                data[i] |= (data[i - offset] >>> (BitsPerElement - shift));
+            }
+            data[offset] = data[0] << shift;
+            for (int i = 0; i < offset; i++) {
+                data[i] = 0;
+            }
+            data[len - 1] &= unsetMask;
+            return;
+        }
     }
  
     /**
@@ -185,5 +212,26 @@ public class BitVector {
             val |= 1;
         }
         return val;
+    }
+
+    private void clear() {
+        for (int i = 0; i < len; i++) {
+            data[len] = 0;
+        }
+    }
+
+    public void print() {
+        for (int i = len - 1; i >= 0; i--) {
+            int j = (i == len - 1) ? ((int) (size % BitsPerElement)) : BitsPerElement - 1;
+            for (; j >= 0; j--) {
+                if ((j % 8 == 0)) {
+                    if ((j != 0 || i != 0)) {
+                        System.out.print(" ");
+                    }
+                }
+                System.out.print(((data[i] & (1L << j)) == 0) ? "0" : "1");
+            }
+        }
+        System.out.println();
     }
 }
