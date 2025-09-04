@@ -188,8 +188,11 @@ public class DoublyLinkedList<T> implements ListInterface<T> {
             return false;
         }
         if (size == 1) {
-            clear();
-            return true;
+            if (head.getData().equals(t)) {
+                clear();
+                return true;
+            }
+            return false;
         }
         Node cur = head;
         while (!cur.getData().equals(t)) {
