@@ -239,7 +239,7 @@ public class Problems {
         if (odds == arr.size()) {
             return -1;
         }
-        for (int i = 0; i < odds - 1; i++) {
+        for (int i = 0; i <= odds - 1; i++) {
             arr.remove(0); // remove all the evens
         }
         arr.sort(); // then sort and take the largest
@@ -262,14 +262,40 @@ public class Problems {
      */
     public static long freakyNumbers(long m, long n, long k) {
         DynamicArray<Long> powers = new DynamicArray<>();
-        long count = (m == 1) ? 1 : 0;
+        if (k == 1) {
+            return (m <= n) ? n - m : 0;
+        }
+        long count = 0;
         if (m > n) {
             return 0;
         }
-        long maxPower = (long) Math.floor(logk(k, n));
         long i = 0;
+        long num;
+        while (n - (num = (long) Math.pow(k, i++)) >= 0) {
+            powers.append(num);
+        }
+        long bits = 0;
+        long s = 0;
+        while (s < n) {
+            if ((num = sumIndexes(powers, bits)) < m) {
+                bits++;
+                continue;
+            }
+            count++;
+        }
+        return count;
+    }
 
-        return 0;
+    private static long sumIndexes(DynamicArray<Long> arr, long indices) {
+        long sum = 0;
+        int numBits = 63 - Long.numberOfLeadingZeros(indices);
+        for (int i = 0; i <= numBits; i++) {
+            if ((indices & (1L << i)) == 0) {
+                continue;
+            }
+            sum += arr.get(i);
+        }
+        return sum;
     }
 
     public static double logk(long k, long x) {
