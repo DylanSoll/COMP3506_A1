@@ -118,7 +118,7 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
      */
     @Override
     public boolean add(int ix, T element) {
-        throw_index_error_if_oob_inclusive(ix);
+        checkBounds(ix, false);
         if (ix == 0) {
             prepend(element);
             return true;
@@ -161,7 +161,7 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
      */
     @Override
     public T get(int ix) {
-        throw_index_error_if_oob(ix);
+        checkBounds(ix, true);
         return data[start + ix];
     }
 
@@ -172,7 +172,7 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
      */
     @Override
     public T set(int ix, T element) {
-        throw_index_error_if_oob(ix);
+        checkBounds(ix, true);
         T old = data[start + ix];
         data[start + ix] = element;
         return old;
@@ -185,7 +185,7 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
      */
     @Override
     public T remove(int ix) {
-        throw_index_error_if_oob(ix);
+        checkBounds(ix, true);
         int pos = ix + start;
         T value = data[pos];
         data[pos] = null;
@@ -262,9 +262,7 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
      * like: if (data[i].compareTo(data[j]) < 0) { // data[i] < data[j] }
      */
     public void sort() {
-        System.out.println(start);
         quickSort(start, start + size - 1);
-        System.out.println(start);
     }
 
     private boolean resize(int newCapacity) {
@@ -286,14 +284,14 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
         return true;
     }
 
-    private void throw_index_error_if_oob(int ix) {
-        if (ix < 0 || ix >= this.size) {
-            throw new IndexOutOfBoundsException("Index " + ix + " is out of bounds.");
-        }
-    }
-
-    private void throw_index_error_if_oob_inclusive(int ix) {
-        if (ix < 0 || ix > this.size) {
+    /**
+     * Checks to see if the index provided is within bounds, and if not, throws IndexOutOfBoundsException
+     * @param ix the index to check if within bounds
+     * @param exclusive whether the upper bound is exclusive or not, ix \in [0, size) {true} || ix \in [0, size] {false}
+     * @throws IndexOutOfBoundsException if ix < 0 or ix > size or (ix == size and exclusive == true)
+     */
+    private void checkBounds(int ix, boolean exclusive) throws IndexOutOfBoundsException {
+        if (ix < 0 || ix >= (this.size + ((exclusive) ? 0 : 1))) {
             throw new IndexOutOfBoundsException("Index " + ix + " is out of bounds.");
         }
     }
