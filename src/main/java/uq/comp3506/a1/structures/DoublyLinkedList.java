@@ -277,6 +277,16 @@ public class DoublyLinkedList<T> implements ListInterface<T> {
         return cur;
     }
 
+    public String toString() {
+        String out = "";
+        Node cur = head;
+        while (cur != null) {
+            out += cur.getData().toString();
+            cur = cur.next;
+        }
+        return out;
+    }
+
     /**
      * The nested Node class.
      * data: The data payload

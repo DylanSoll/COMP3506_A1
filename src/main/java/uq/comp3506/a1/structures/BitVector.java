@@ -187,6 +187,52 @@ public class BitVector {
      * these will invoke a right shift.
      */
     public void rotate(long dist) {
+        if (dist == 0) {
+            return;
+        }
+        if (dist >= size || -1 * dist >= size) {
+            dist = getMinRotDist(dist); // removes excessive rotation
+        }
+        long[] copy = new long[len];
+        if (dist > 0) {
+            long overflow = 0;
+            int offset = (int) (dist / BitsPerElement);
+            int shift = (int) (dist - ((long) offset * (long) BitsPerElement));
+            for (int i = 0; i < len; i++) {
+                copy[(i + offset) % len] = data[i];
+            }
+            data = copy;
+            int rem = shift % BitsPerElement;
+            overflow = ((data[len - 1] >>> rem) << shift);
+            for (int i = len - 1; i > 0; i--) {
+                data[i] <<= shift;
+                data[i] |= (data[i - 1] >>> (BitsPerElement - shift));
+            }
+            data[0] <<= shift;
+            data[0] |= overflow;
+            data[len - 1] &= unsetMask;
+            return;
+        }
+        dist *= -1;
+        long overflow = 0;
+        int offset = (int) (dist / BitsPerElement);
+        int shift = (int) (dist - ((long) offset * (long) BitsPerElement));
+        for (int i = len - 1; i > 0; i++) {
+            copy[(i - offset) % len] = data[i];
+        }
+        data = copy;
+        overflow = data[0] << (BitsPerElement - shift);
+        for (int i = 0; i < len - 2; i--) {
+            data[i] >>>= shift;
+            data[i] |= (data[i + 1] << (BitsPerElement - shift));
+        }
+        data[len - 1] >>>= shift;
+        data[len - 1] |= overflow;
+        data[len - 1] &= unsetMask;
+        return;
+    }
+
+    private void shiftLeft(long dist) {
 
     }
 
@@ -240,7 +286,7 @@ public class BitVector {
 
     public void print() {
         for (int i = len - 1; i >= 0; i--) {
-            int j = (i == len - 1) ? ((int) (size % BitsPerElement)) : BitsPerElement - 1;
+            int j = (i == len - 1) ? ((int) (size % BitsPerElement)) - 1 : BitsPerElement - 1;
             for (; j >= 0; j--) {
                 if ((j % 8 == 0)) {
                     if ((j != 0 || i != 0)) {
@@ -251,5 +297,12 @@ public class BitVector {
             }
         }
         System.out.println();
+    }
+
+    private long getMinRotDist(long dist) {
+        if (dist == 0L) {
+            return 0;
+        }
+        return dist - (size * (dist / size));
     }
 }

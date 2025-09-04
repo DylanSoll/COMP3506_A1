@@ -168,8 +168,27 @@ public class TestBitVector {
     }
 
     @Test
+    public void testLeftShiftSmall() {
+        BitVector vec = new BitVector(2);
+        long val = 0b11;
+        vec.set(0);
+        vec.set(1);
+        vec.print();
+        vec.shift(1);
+        vec.print();
+        vec.shift(1);
+        vec.print();
+        vec.shift(1);
+        vec.print();
+        vec.shift(-1);
+        vec.print();
+        vec.shift(-1);
+        vec.print();
+    }
+
+    @Test
     public void testLeftShiftSkip() {
-        BitVector vec = new BitVector(24);
+        BitVector vec = new BitVector(100);
         vec.set(3);
         vec.set(5);
         vec.set(6);
@@ -180,7 +199,7 @@ public class TestBitVector {
         vec.print();
         vec.shift(1);
         vec.print();
-        vec.shift(10);
+        vec.shift(64);
         vec.print();
         vec.shift(2);
         vec.print();
@@ -234,5 +253,26 @@ public class TestBitVector {
             vec.shift(-1);
             vec.print();
         }
+    }
+
+    @Test
+    public void testLeftRotateSimple() {
+        BitVector vec = new BitVector(24);
+        vec.set(23);
+        vec.set(22);
+        vec.set(20);
+        vec.set(1);
+        vec.set(2);
+        vec.set(3);
+        vec.set(5);
+        vec.print();
+        vec.rotate(1);
+        vec.print();
+        vec.rotate(1);
+        vec.print();
+        vec.rotate(1);
+        vec.print();
+        vec.rotate(1);
+        vec.print();
     }
 }

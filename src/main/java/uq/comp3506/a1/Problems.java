@@ -4,10 +4,56 @@ package uq.comp3506.a1;
 
 // This is part of COMP3506 Assignment 1. Students must implement their own solutions.
 
+import uq.comp3506.a1.structures.DoublyLinkedList;
+
 /**
  * Supplied by the COMP3506/7505 teaching team, Semester 2, 2025.
  */
 public class Problems {
+
+    private static class RLEchar {
+
+        private final char ch;
+        private int count;
+
+        public RLEchar(char ch) {
+            this.ch = ch;
+            this.count = 1; // counts from 1 as one instance would have to be found
+        }
+
+        public int getCount() {
+            return this.count;
+        }
+
+        public boolean increment() {
+            if (this.count == 9) {
+                return false;
+            }
+            this.count++;
+            return true;
+        }
+
+        public boolean equals(char o) {
+            return this.ch == o;
+        }
+
+        @Override
+        public String toString() {
+            return "" + this.ch + this.count;
+        }
+    }
+
+    public static double abs(double val) {
+        if (val >= 0) {
+            return val;
+        }
+        return -1 * val;
+    }
+
+    public static int floorLog(long num) {
+        return 63 - Long.numberOfLeadingZeros(num);
+    }
+
 
     /**
      * Return a string representing the RLE of input
@@ -21,8 +67,27 @@ public class Problems {
      * input will have up to 100'000 characters
      */
     public static String shortRuns(String input) {
+        DoublyLinkedList<RLEchar> li = new DoublyLinkedList<>();
+        if (input.isEmpty()) {
+            return "";
+        }
+        RLEchar cur = null;
+        for (char let : input.toCharArray()) {
+            if (cur == null) {
+                cur = new RLEchar(let);
+                continue;
+            }
+            if (cur.equals(let)) {
+                if (cur.increment()) {
+                    continue;
+                }
+            }
+            li.append(cur);
+            cur = new RLEchar(let);
 
-        return "";
+        }
+        li.append(cur);
+        return li.toString();
     }
 
     /**
@@ -45,8 +110,29 @@ public class Problems {
      * There will be up to 10'000'000 turns
      */
     public static long arithmeticRules(Long[] array, long turns) {
-
-        return -1;
+        // simplifications
+        // non-negative integers, largest possible element is 10_000_000 (before any turns)
+        // so it cannot wrap around in 10_000_000 turns
+        // the sum from 10_000_000 to 20_000_000 does not cause overflow of long
+        if (turns == 0) {
+            return 0;
+        }
+        long max = 0;
+        int maxIx = 0;
+        for (int ix = 0; ix < array.length; ix++) {
+            if (array[ix] > max) {
+                max = array[ix];
+                maxIx = ix;
+                if (max == 10_000_000) {
+                    break; // cannot exceed this value before any turns so stop searching
+                }
+            }
+        }
+        long score = 0;
+        for (int i = 0; i < turns; i++) {
+            score += array[maxIx]++;
+        }
+        return score;
     }
 
     /**
@@ -62,8 +148,62 @@ public class Problems {
      * number will be up to 10**16 (ten to the power 16)
      */
     public static double sqrtHappens(long number, double epsilon) {
+        if (number == 1L || number == 0L) {
+            return number; // assuming 0 is not tested but check anyway
+        }
+        double guess = (double) estimateSqrtFloor(number, epsilon);
+        double num = (double) number;
+        while (abs(number - guess * guess) > epsilon) {
+            guess = (guess + num / guess) / 2;
+        }
+        return guess;
+    }
 
-        return -1.0;
+    /**
+     * Estimates the lowest
+     * @param number
+     * @param epsilon
+     * @return
+     *
+     */
+    private static long estimateSqrtFloor(long number, double epsilon) {
+        /*
+        sqrt(x) = x^0.5 = 2^(log2(x^0.5)) = 2^(log2(x)/2)
+        Using longs and bitwise operations, a lower bound for sqrt(x) can be achieved with 2^(log2(x)/2)
+        An upper bound can be established (for number > 16):
+        upper bound = 2^(log2(number)/2 + 1)
+        For numbers less than 16, number / 2 can be used as an upper bound
+         */
+        long numBits = floorLog(number);
+        long low = 1L << (numBits >>> 1);
+        // can get a low bound for the estimate for sqrt using 2^(log_2(number)/2))
+        long high = (numBits <= 4) ? (number >>> 1) : (1L << ((numBits >> 1) + 1)); // higher bound
+        long sqr = square(low);
+        if (low + 1 >= high) {
+            return low;
+        }
+        long estimate = low;
+        while (low + 1 < high) {
+            estimate = (low + high) / 2;
+            sqr = square(estimate);
+            if (sqr == number) {
+                return sqr;
+            }
+            if (sqr < number) {
+                low = estimate;
+                continue;
+            }
+            high = estimate;
+        }
+        return estimate;
+    }
+
+    private static long square(long num) {
+        return num * num;
+    }
+
+    private static double square(double num) {
+        return num * num;
     }
 
     /**

@@ -2,6 +2,8 @@
  * Supplied by the COMP3506/7505 teaching team, Semester 2, 2025.
  */
 
+import org.junit.Assert;
+import org.junit.Test;
 import uq.comp3506.a1.Problems;
 
 public class TestProblems {
@@ -84,6 +86,26 @@ public class TestProblems {
         }
 
         // profit??
+    }
+
+    @Test
+    public void testShortRunsSimple() {
+        Assert.assertEquals("H1E1L2O4", Problems.shortRuns("HELLOOOO"));
+        Assert.assertEquals("A8", Problems.shortRuns("AAAAAAAA"));
+        Assert.assertEquals("V1E1R1Y1S1A1D1", Problems.shortRuns("VERYSAD"));
+        Assert.assertEquals("A9A3", Problems.shortRuns("AAAAAAAAAAAA"));
+    }
+
+    @Test
+    public void testSqrtHappensSimple() {
+        Problems.sqrtHappens(1L, 0.0001);
+        Problems.sqrtHappens(12063L, 0.0001);
+        Problems.sqrtHappens(623347L, 0.0001);
+        Problems.sqrtHappens(730859195L, 0.0001);
+        System.out.println("1L:" + Math.floor(Math.sqrt(1L)));
+        System.out.println("12063L:" + Math.floor(Math.sqrt(12063L)));
+        System.out.println("623347L:" + Math.floor(Math.sqrt(623347L)));
+        System.out.println("730859195L:" + Math.floor(Math.sqrt(730859195L)));
     }
 
 }
