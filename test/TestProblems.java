@@ -108,4 +108,15 @@ public class TestProblems {
         System.out.println("730859195L:" + Math.floor(Math.sqrt(730859195L)));
     }
 
+    @Test
+    public void testSpaceOdditySimple() {
+        Long[] arr = new Long[] {1L,5L,2L,4L,6L,5L,1L,5L,5L,2L,5L};
+        Assert.assertEquals(6, Problems.spaceOddity(arr)); // 6
+        arr = new Long[] {1L,1L,5L,5L,2L,3L,2L,3L};
+        Assert.assertEquals(-1, Problems.spaceOddity(arr)); // 6
+        arr = new Long[] {9L,9L,1L,5L,1L,9L,1L,9L};
+        Assert.assertEquals(5, Problems.spaceOddity(arr)); // 6
+
+    }
+
 }

@@ -5,6 +5,7 @@ package uq.comp3506.a1;
 // This is part of COMP3506 Assignment 1. Students must implement their own solutions.
 
 import uq.comp3506.a1.structures.DoublyLinkedList;
+import uq.comp3506.a1.structures.DynamicArray;
 
 /**
  * Supplied by the COMP3506/7505 teaching team, Semester 2, 2025.
@@ -219,8 +220,30 @@ public class Problems {
      * There will be up to 100'000 numbers in the array
      */
     public static long spaceOddity(Long[] numbers) {
-
-        return -1;
+        DynamicArray<Long> arr = new DynamicArray<Long>();
+        int odds = 0;
+        int index;
+        for (Long num : numbers) {
+            index = arr.getFirst(num);
+            if (index == -1) {
+                arr.append(num);
+                continue;
+            }
+            if (index >= odds) {
+                arr.swap(index, odds);
+                odds++;
+            } else {
+                arr.swap(index, --odds);
+            }
+        }
+        if (odds == arr.size()) {
+            return -1;
+        }
+        for (int i = 0; i < odds - 1; i++) {
+            arr.remove(0); // remove all the evens
+        }
+        arr.sort(); // then sort and take the largest
+        return (long) arr.get(arr.size() - 1);
     }
 
     /**
@@ -238,8 +261,19 @@ public class Problems {
      * k will be up to 10'000
      */
     public static long freakyNumbers(long m, long n, long k) {
+        DynamicArray<Long> powers = new DynamicArray<>();
+        long count = (m == 1) ? 1 : 0;
+        if (m > n) {
+            return 0;
+        }
+        long maxPower = (long) Math.floor(logk(k, n));
+        long i = 0;
 
-        return -1;
+        return 0;
+    }
+
+    public static double logk(long k, long x) {
+        return Math.log(x) / Math.log(k);
     }
 
     /**

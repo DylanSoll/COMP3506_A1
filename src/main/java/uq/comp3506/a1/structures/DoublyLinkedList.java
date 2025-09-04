@@ -278,13 +278,14 @@ public class DoublyLinkedList<T> implements ListInterface<T> {
     }
 
     public String toString() {
-        String out = "";
+        String[] out = new String[size];
         Node cur = head;
+        int idx = 0;
         while (cur != null) {
-            out += cur.getData().toString();
+            out[idx] = cur.getData().toString();
             cur = cur.next;
         }
-        return out;
+        return String.join("", out);
     }
 
     /**

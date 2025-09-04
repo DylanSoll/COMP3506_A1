@@ -117,7 +117,7 @@ public class TestDynamicArray {
             int minSize = rand.nextInt(testArr.size() - 1);
 
             while (testArr.size() > minSize) {
-                int ix = Math.max(rand.nextInt(testArr.size() - 1), 0);
+                int ix = rand.nextInt(Math.max(testArr.size() - 1, 0));
                 Assert.assertEquals(testArr.remove(ix), arr.remove(ix));
             }
             Assert.assertEquals(testArr.size(), arr.size());
@@ -158,10 +158,10 @@ public class TestDynamicArray {
                     });
             // ensures get returns the correct element and have the same size
             areContentsEqual(testArr, arr);
-            int minSize = rand.nextInt(testArr.size() / 2 - 1);
+            int minSize = rand.nextInt(0, testArr.size() / 2);
 
             while (testArr.size() > minSize) {
-                int ix = Math.max(rand.nextInt(testArr.size() - 1), 0);
+                int ix = rand.nextInt(0, testArr.size());
                 int pos = testArr.indexOf(testArr.get(ix));
                 Assert.assertTrue(arr.removeFirst(testArr.remove(pos)));
                 areContentsEqual(testArr, arr);
@@ -180,6 +180,28 @@ public class TestDynamicArray {
         }
         tarr.sort(Integer::compareTo);
         arr.sort();
+        areContentsEqual(tarr, arr);
+    }
+
+    @Test
+    public void testSortSimple() {
+        DynamicArray<Integer> arr = new DynamicArray<>();
+        ArrayList<Integer> tarr = new ArrayList<>();
+        for (int x : List.of(4,5,-1, -2, 0,1,2,3,6,7,12,11,9,8,10,13)) {
+            arr.append(x);
+            tarr.add(x);
+        }
+        areContentsEqual(tarr, arr);
+    }
+
+    @Test
+    public void testSortRand() {
+        DynamicArray<Integer> arr = new DynamicArray<>();
+        ArrayList<Integer> tarr = new ArrayList<>();
+        Stream.generate(rand::nextInt).limit(200).forEach((x) -> {
+            arr.append(x);
+            tarr.add(x);
+        });
         areContentsEqual(tarr, arr);
     }
 }

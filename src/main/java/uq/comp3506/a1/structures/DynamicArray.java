@@ -118,7 +118,6 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
      */
     @Override
     public boolean add(int ix, T element) {
-        checkBounds(ix, false);
         if (ix == 0) {
             prepend(element);
             return true;
@@ -127,6 +126,8 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
             append(element);
             return true;
         }
+        checkBounds(ix, false);
+
         if (isFull()) {
             resize(capacity * 2);
         }
@@ -333,28 +334,36 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
     }
 
     private void quickSort(int low, int high) {
-        if (low >= high) {
+        if (high <= low) {
             return;
         }
         int pivot = (low + high) / 2; // not random pivot but should work
+
         T x = data[pivot];
         int l = low;
         int h = high;
-        while (low < high) {
-            if (data[low].compareTo(x) < 0) {
+        do {
+            while (data[low].compareTo(x) < 0) {
                 low++;
-            } else if (data[high].compareTo(x) >= 0) {
+            }
+            while (data[high].compareTo(x) > 0) {
                 high--;
-            } else {
+            }
+            if (low <= high) {
                 T temp = data[low];
                 data[low] = data[high];
                 data[high] = temp;
                 low++;
                 high--;
             }
+        } while (low <= high);
+
+        if (l < high) {
+            quickSort(l, high);
         }
-        quickSort(l, low - 1);
-        quickSort(high + 1, h);
+        if (low < h) {
+            quickSort(low, h);
+        }
     }
 
     public boolean isSorted() {
@@ -371,5 +380,38 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
         return true;
     }
 
+    /**
+     * Gets the index of the first occurrence. Returns -1 if not in array
+     * @param t the value to search for
+     * @return the index of the first occurrence of the value or -1 if not in array
+     */
+    public int getFirst(T t) {
+        if (isEmpty()) {
+            return -1;
+        }
+        for (int ix = start; ix < start + size; ix++) {
+            if (data[ix].compareTo(t) == 0) {
+                return ix - start;
+            }
+        }
+        return -1;
+    }
 
+    /**
+     * Swaps the values at index ixa and ixb
+     * @param ixa first index to swap
+     * @param ixb second index to swap
+     */
+    public void swap(int ixa, int ixb) {
+        checkBounds(ixa, true);
+        checkBounds(ixb, true);
+        if (ixa == ixb) {
+            return;
+        }
+        ixa += start;
+        ixb += start;
+        T temp = data[ixa];
+        data[ixa] = data[ixb];
+        data[ixb] = temp;
+    }
 }
