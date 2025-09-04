@@ -282,7 +282,7 @@ public class DoublyLinkedList<T> implements ListInterface<T> {
         Node cur = head;
         int idx = 0;
         while (cur != null) {
-            out[idx] = cur.getData().toString();
+            out[idx++] = cur.getData().toString();
             cur = cur.next;
         }
         return String.join("", out);

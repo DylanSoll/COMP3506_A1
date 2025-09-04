@@ -40,7 +40,7 @@ public class Problems {
 
         @Override
         public String toString() {
-            return "" + this.ch + this.count;
+            return String.format("%c%d", this.ch, this.count);
         }
     }
 
