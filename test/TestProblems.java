@@ -6,6 +6,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import uq.comp3506.a1.Problems;
 
+import java.util.List;
+
 public class TestProblems {
 
     // The series of tests that need to be implemented
@@ -102,10 +104,6 @@ public class TestProblems {
         Problems.sqrtHappens(12063L, 0.0001);
         Problems.sqrtHappens(623347L, 0.0001);
         Problems.sqrtHappens(730859195L, 0.0001);
-        System.out.println("1L:" + Math.floor(Math.sqrt(1L)));
-        System.out.println("12063L:" + Math.floor(Math.sqrt(12063L)));
-        System.out.println("623347L:" + Math.floor(Math.sqrt(623347L)));
-        System.out.println("730859195L:" + Math.floor(Math.sqrt(730859195L)));
     }
 
     @Test
@@ -116,6 +114,21 @@ public class TestProblems {
         Assert.assertEquals(-1, Problems.spaceOddity(arr)); // 6
         arr = new Long[] {9L,9L,1L,5L,1L,9L,1L,9L};
         Assert.assertEquals(5, Problems.spaceOddity(arr)); // 6
+
+    }
+
+    @Test
+    public void testFreakySimple() {
+        Assert.assertEquals(0L, Problems.freakyNumbers(1, 1, 1));
+        // 1
+        Assert.assertEquals(List.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).size(), Problems.freakyNumbers(1, 10, 2));
+        // 0001, 0010, 0011, 0100, 0101, 0110, 0111, 1000, 1001, 1010
+        // 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+        Assert.assertEquals(List.of(3, 4, 5, 6, 7, 8, 9, 10).size(), Problems.freakyNumbers(3, 10, 2));
+        // 0001, 0010, 0011, 0100, 0101, 0110, 0111, 1000, 1001, 1010
+        // 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+        Assert.assertEquals(5, Problems.freakyNumbers(1, 10, 3));
+        // 3^0 [1], 3^1 [3], 3^0 + 3^1 [4], 3^2 [9], 3^2 + 3^0 [10]
 
     }
 
