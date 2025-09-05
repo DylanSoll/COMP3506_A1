@@ -10,8 +10,8 @@ import uq.comp3506.a1.structures.DynamicArray;
 public class DNAStructure {
 
     private final int w;
-    private DynamicArray<Character> window;
-    private int[] counts = new int[4];
+    private final DynamicArray<Character> window;
+    private final int[] counts = new int[4];
 
     private static final int ADENINE_CIX = 0;
     private static final int CYTOSINE_CIX = 1;
@@ -21,8 +21,10 @@ public class DNAStructure {
     private static final char CYTOSINE = 'C';
     private static final char GUANINE = 'G';
     private static final char THYMINE = 'T';
+
     /**
      * Construct at empty DNAStructure object that can store w chars.
+     * @param w the size of the window
      */
     public DNAStructure(int w) {
         this.w = w;
@@ -123,10 +125,10 @@ public class DNAStructure {
      * Again, k will be in the range [2, 100], and 2 <= k <= w
      */
     public boolean hasPalindrome(int k) {
-        int palIx = 0;
         for (int startIx = 0; startIx < window.size() - k; startIx++) {
-            for (palIx = 0; palIx < k / 2; palIx++) {
-                if (!isComplement(window.get(startIx + palIx), window.get(startIx + k - palIx - 1))) {
+            for (int palIx = 0; palIx < k / 2; palIx++) {
+                if (!isComplement(window.get(startIx + palIx),
+                        window.get(startIx + k - palIx - 1))) {
                     break;
                 }
                 if (palIx + 1 == k / 2) {
@@ -154,77 +156,5 @@ public class DNAStructure {
             case THYMINE -> chComp == ADENINE;
             default -> false;
         };
-    }
-
-    private static class Node {
-        public static final char ADENINE = 'A';
-        public static final char CYTOSINE = 'C';
-        public static final char GUANINE = 'G';
-        public static final char THYMINE = 'T';
-        public static final int ADENINE_VAL = 1;
-        public static final int CYTOSINE_VAL = 2;
-        public static final int GUANINE_VAL = -2;
-        public static final int THYMINE_VAL = -1;
-
-        private final int value;
-        private final char ch;
-        private Node next;
-        private Node prev;
-
-        public Node(char ch) {
-            value = mapToInt(ch);
-            this.ch = ch;
-        }
-
-        /**
-         * Creates a new node for the letter
-         * @param ch the character
-         * @param prev the previous node
-         * @param next the next node
-         */
-        public Node(char ch, Node prev, Node next) {
-            value = mapToInt(ch);
-            this.ch = ch;
-            this.prev = prev;
-            this.next = next;
-        }
-
-        private int mapToInt(char ch) {
-            return switch (ch) {
-                case Node.ADENINE -> Node.ADENINE_VAL;
-                case Node.CYTOSINE -> Node.CYTOSINE_VAL;
-                case Node.GUANINE -> Node.GUANINE_VAL;
-                case Node.THYMINE -> Node.THYMINE_VAL;
-                default -> throw new IllegalArgumentException("Invalid DNA");
-            };
-        }
-
-        public Node getNext() {
-            return this.next;
-        }
-
-        public void setNext(Node n) {
-            this.next = n;
-        }
-
-        public Node getPrev() {
-            return this.prev;
-        }
-
-        public void setPrev(Node p) {
-            this.prev = p;
-        }
-
-        public char getCh() {
-            return ch;
-        }
-
-        public String toString() {
-            return String.valueOf(ch);
-        }
-
-        public int toInt() {
-            return value;
-        }
     }
 }
