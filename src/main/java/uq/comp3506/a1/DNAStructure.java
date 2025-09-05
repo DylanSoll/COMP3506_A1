@@ -2,24 +2,38 @@
 
 package uq.comp3506.a1;
 
+import uq.comp3506.a1.structures.DynamicArray;
+
 /**
  * Supplied by the COMP3506/7505 teaching team, Semester 2, 2025.
  */
 public class DNAStructure {
 
+    private final int w;
+    private DynamicArray<Character> window;
+    private int[] counts = new int[4];
+
+    private static final int ADENINE_CIX = 0;
+    private static final int CYTOSINE_CIX = 1;
+    private static final int GUANINE_CIX = 2;
+    private static final int THYMINE_CIX = 3;
+    private static final char ADENINE = 'A';
+    private static final char CYTOSINE = 'C';
+    private static final char GUANINE = 'G';
+    private static final char THYMINE = 'T';
     /**
      * Construct at empty DNAStructure object that can store w chars.
      */
     public DNAStructure(int w) {
-
+        this.w = w;
+        window = new DynamicArray<>();
     }
 
     /**
      * Return true if the structure is full, false otherwise
      */
     public boolean isFull() {
-
-        return false;
+        return w == window.size();
     }
 
     /**
@@ -27,7 +41,48 @@ public class DNAStructure {
      * Full marks: O(1) or O(1*) worst-case
      */
     public void slide(char c) {
+        if (isFull()) {
+            adjustCount(c, window.remove(0));
+        } else {
+            adjustCount(c);
+        }
+        window.append(c);
+    }
 
+    /**
+     * Increases the count for the given character added
+     * @param added the character added to the window
+     */
+    private void adjustCount(char added) {
+        switch (added) {
+            case ADENINE -> counts[ADENINE_CIX]++;
+            case CYTOSINE -> counts[CYTOSINE_CIX]++;
+            case GUANINE -> counts[GUANINE_CIX]++;
+            case THYMINE -> counts[THYMINE_CIX]++;
+        }
+    }
+
+    /**
+     * Increments the count of the letter added and decrements the letter that was removed
+     * @param added the character added
+     * @param removed the character removed
+     */
+    private void adjustCount(char added, char removed) {
+        if (added == removed) {
+            return;
+        }
+        switch (added) {
+            case ADENINE -> counts[ADENINE_CIX]++;
+            case CYTOSINE -> counts[CYTOSINE_CIX]++;
+            case GUANINE -> counts[GUANINE_CIX]++;
+            case THYMINE -> counts[THYMINE_CIX]++;
+        }
+        switch (removed) {
+            case ADENINE -> counts[ADENINE_CIX]--;
+            case CYTOSINE -> counts[CYTOSINE_CIX]--;
+            case GUANINE -> counts[GUANINE_CIX]--;
+            case THYMINE -> counts[THYMINE_CIX]--;
+        }
     }
 
     /**
@@ -35,8 +90,13 @@ public class DNAStructure {
      * Full marks: O(1) worst-case
      */
     public int count(char c) {
-
-        return 0;
+        return switch (c) {
+            case ADENINE -> counts[ADENINE_CIX];
+            case CYTOSINE -> counts[CYTOSINE_CIX];
+            case GUANINE -> counts[GUANINE_CIX];
+            case THYMINE -> counts[THYMINE_CIX];
+            default -> 0;
+        };
     }
 
     /**
@@ -50,7 +110,9 @@ public class DNAStructure {
      * Note: k will be in the range [2, 13], and 2 <= k <= w
      */
     public int countRepeats(int k) {
-
+        if (k <= 1 || k > 13 || k < window.size()) {
+            return 0; // inp is bounded
+        }
         return 0;
     }
 
@@ -61,7 +123,17 @@ public class DNAStructure {
      * Again, k will be in the range [2, 100], and 2 <= k <= w
      */
     public boolean hasPalindrome(int k) {
-
+        int palIx = 0;
+        for (int startIx = 0; startIx < window.size() - k; startIx++) {
+            for (palIx = 0; palIx < k / 2; palIx++) {
+                if (!isComplement(window.get(startIx + palIx), window.get(startIx + k - palIx - 1))) {
+                    break;
+                }
+                if (palIx + 1 == k / 2) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
@@ -71,7 +143,88 @@ public class DNAStructure {
      * If the window is not full, just return the populated characters.
      */
     public String stringify() {
+        return window.toString();
+    }
 
-        return null;
+    private static boolean isComplement(char ch, char chComp) {
+        return switch (ch) {
+            case ADENINE -> chComp == THYMINE;
+            case CYTOSINE -> chComp == GUANINE;
+            case GUANINE -> chComp == CYTOSINE;
+            case THYMINE -> chComp == ADENINE;
+            default -> false;
+        };
+    }
+
+    private static class Node {
+        public static final char ADENINE = 'A';
+        public static final char CYTOSINE = 'C';
+        public static final char GUANINE = 'G';
+        public static final char THYMINE = 'T';
+        public static final int ADENINE_VAL = 1;
+        public static final int CYTOSINE_VAL = 2;
+        public static final int GUANINE_VAL = -2;
+        public static final int THYMINE_VAL = -1;
+
+        private final int value;
+        private final char ch;
+        private Node next;
+        private Node prev;
+
+        public Node(char ch) {
+            value = mapToInt(ch);
+            this.ch = ch;
+        }
+
+        /**
+         * Creates a new node for the letter
+         * @param ch the character
+         * @param prev the previous node
+         * @param next the next node
+         */
+        public Node(char ch, Node prev, Node next) {
+            value = mapToInt(ch);
+            this.ch = ch;
+            this.prev = prev;
+            this.next = next;
+        }
+
+        private int mapToInt(char ch) {
+            return switch (ch) {
+                case Node.ADENINE -> Node.ADENINE_VAL;
+                case Node.CYTOSINE -> Node.CYTOSINE_VAL;
+                case Node.GUANINE -> Node.GUANINE_VAL;
+                case Node.THYMINE -> Node.THYMINE_VAL;
+                default -> throw new IllegalArgumentException("Invalid DNA");
+            };
+        }
+
+        public Node getNext() {
+            return this.next;
+        }
+
+        public void setNext(Node n) {
+            this.next = n;
+        }
+
+        public Node getPrev() {
+            return this.prev;
+        }
+
+        public void setPrev(Node p) {
+            this.prev = p;
+        }
+
+        public char getCh() {
+            return ch;
+        }
+
+        public String toString() {
+            return String.valueOf(ch);
+        }
+
+        public int toInt() {
+            return value;
+        }
     }
 }
