@@ -12,20 +12,20 @@ import uq.comp3506.a1.structures.DynamicArray;
  */
 public class Problems {
 
-    private static class RLEchar {
+    private static class RleChar {
 
         private final char ch;
         private int count;
 
-        public RLEchar(char ch) {
+        public RleChar(char ch) {
             this.ch = ch;
             this.count = 1; // counts from 1 as one instance would have to be found
         }
 
-        public int getCount() {
-            return this.count;
-        }
-
+        /**
+         * Increase the count of the character. if count is 9, return false and do not increment
+         * @return true if count prior to increment was less than 9.
+         */
         public boolean increment() {
             if (this.count == 9) {
                 return false;
@@ -34,6 +34,11 @@ public class Problems {
             return true;
         }
 
+        /**
+         * If the other character is equal to the stored character
+         * @param o other character
+         * @return true if this.ch == o
+         */
         public boolean equals(char o) {
             return this.ch == o;
         }
@@ -44,14 +49,25 @@ public class Problems {
         }
     }
 
-    public static double abs(double val) {
+    /**
+     * Perform the absolute value of the provided double
+     * @param val the signed value to convert to unsigned
+     * @return the unsigned value of val
+     */
+    private static double abs(double val) {
         if (val >= 0) {
             return val;
         }
         return -1 * val;
     }
 
-    public static int floorLog(long num) {
+    /**
+     * Calculates the floor of log_2(num).
+     * The number of used bits in the string is floorLog(num) + 1
+     * @param num the number to get the floor of the log of
+     * @return the floor of log2(num)
+     */
+    private static int floorLog(long num) {
         return 63 - Long.numberOfLeadingZeros(num);
     }
 
@@ -68,14 +84,14 @@ public class Problems {
      * input will have up to 100'000 characters
      */
     public static String shortRuns(String input) {
-        DoublyLinkedList<RLEchar> li = new DoublyLinkedList<>();
+        DoublyLinkedList<RleChar> li = new DoublyLinkedList<>();
         if (input.isEmpty()) {
             return "";
         }
-        RLEchar cur = null;
+        RleChar cur = null;
         for (char let : input.toCharArray()) {
             if (cur == null) {
-                cur = new RLEchar(let);
+                cur = new RleChar(let);
                 continue;
             }
             if (cur.equals(let)) {
@@ -84,7 +100,7 @@ public class Problems {
                 }
             }
             li.append(cur);
-            cur = new RLEchar(let);
+            cur = new RleChar(let);
 
         }
         li.append(cur);
@@ -109,6 +125,7 @@ public class Problems {
      * array will consist of up to 100'000 elements
      * Each element will be up to 10'000'000
      * There will be up to 10'000'000 turns
+     * '
      */
     public static long arithmeticRules(Long[] array, long turns) {
         // simplifications
@@ -152,9 +169,9 @@ public class Problems {
         if (number == 1L || number == 0L) {
             return number; // assuming 0 is not tested but check anyway
         }
-        double guess = (double) estimateSqrtFloor(number, epsilon);
+        double guess = (double) estimateSqrtFloor(number);
         double num = (double) number;
-        while (abs(number - guess * guess) > epsilon) {
+        while (abs(number - square(guess)) > epsilon) {
             guess = (guess + num / guess) / 2;
         }
         return guess;
@@ -162,24 +179,21 @@ public class Problems {
 
     /**
      * Estimates the lowest
-     * @param number
-     * @param epsilon
-     * @return
-     *
+     * @param number the number to estimate
+     * @return the closest natural number less than the square root
+     * sqrt(x) = x^0.5 = 2^(log2(x^0.5)) = 2^(log2(x)/2)
+     * Using longs and bitwise operations, a lower bound for sqrt(x) can be achieved with 2^(log2(x)/2)
+     * An upper bound can be established (for number > 16):
+     * upper bound = 2^(log2(number)/2 + 1)
+     * For numbers less than 16, number / 2 can be used as an upper bound
      */
-    private static long estimateSqrtFloor(long number, double epsilon) {
-        /*
-        sqrt(x) = x^0.5 = 2^(log2(x^0.5)) = 2^(log2(x)/2)
-        Using longs and bitwise operations, a lower bound for sqrt(x) can be achieved with 2^(log2(x)/2)
-        An upper bound can be established (for number > 16):
-        upper bound = 2^(log2(number)/2 + 1)
-        For numbers less than 16, number / 2 can be used as an upper bound
-         */
+    private static long estimateSqrtFloor(long number) {
+
         long numBits = floorLog(number);
         long low = 1L << (numBits >>> 1);
         // can get a low bound for the estimate for sqrt using 2^(log_2(number)/2))
         long high = (numBits <= 4) ? (number >>> 1) : (1L << ((numBits >> 1) + 1)); // higher bound
-        long sqr = square(low);
+        long sqr;
         if (low + 1 >= high) {
             return low;
         }
@@ -220,7 +234,7 @@ public class Problems {
      * There will be up to 100'000 numbers in the array
      */
     public static long spaceOddity(Long[] numbers) {
-        DynamicArray<Long> arr = new DynamicArray<Long>();
+        DynamicArray<Long> arr = new DynamicArray<>();
         int odds = 0;
         int index;
         for (Long num : numbers) {
@@ -243,7 +257,7 @@ public class Problems {
             arr.remove(0); // remove all the evens
         }
         arr.sort(); // then sort and take the largest
-        return (long) arr.get(arr.size() - 1);
+        return arr.get(arr.size() - 1);
     }
 
     /**
@@ -263,42 +277,65 @@ public class Problems {
     public static long freakyNumbers(long m, long n, long k) {
         DynamicArray<Long> powers = new DynamicArray<>();
         if (k == 1) {
-            return (m <= n) ? n - m : 0;
+            return (m < n) ? (n - m) : 0;
         }
-        long count = 0;
-        if (m > n) {
+        if (m >= n) {
             return 0;
         }
-        long i = 0;
-        long num;
-        while (n - (num = (long) Math.pow(k, i++)) >= 0) {
-            powers.append(num);
-        }
-        long bits = 0;
-        long s = 0;
-        while (s < n) {
-            if ((s = sumIndexes(powers, bits)) >= m && s <= n) {
-                count++;
+        powers.append(1L);
+        powers.append(k);
+        long bits = 1;
+        long s = 1;
+        while (s < m) {
+            s = sumIndexes(powers, bits, k);
+            if (s < m) {
+                bits <<= 1;
             }
-            bits++;
         }
-        return count;
+        while (s > m) {
+            s = sumIndexes(powers, bits, k);
+            if (s > m) {
+                bits--;
+            }
+        }
+        long smallest = bits;
+
+        while (s < n) {
+            s = sumIndexes(powers, bits, k);
+            if (s < n) {
+                bits <<= 1;
+            }
+        }
+        while (s > n) {
+            s = sumIndexes(powers, bits, k);
+            if (s > n) {
+                bits--;
+            }
+        }
+        return bits - smallest + ((s == n) ? 1 : 0);
     }
 
-    private static long sumIndexes(DynamicArray<Long> arr, long indices) {
+    private static Long pow(long k, long i) {
+        long total = 1;
+        while (i-- > 0) {
+            total *= k;
+        }
+        return total;
+    }
+
+    private static long sumIndexes(DynamicArray<Long> arr, long indices, long k) {
         long sum = 0;
-        int numBits = 63 - Long.numberOfLeadingZeros(indices);
-        for (int i = 0; i <= numBits; i++) {
+        int numBits = floorLog(indices) + 1;
+        for (int i = 0; i < numBits; i++) {
+            if (i == arr.size()) {
+                arr.append(pow(k, i));
+            }
             if ((indices & (1L << i)) == 0) {
                 continue;
             }
             sum += arr.get(i);
         }
         return sum;
-    }
-
-    public static double logk(long k, long x) {
-        return Math.log(x) / Math.log(k);
     }
 
     /**
