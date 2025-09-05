@@ -81,7 +81,7 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
      */
     @Override
     public boolean append(T element) {
-        if (isFull() || (this.size + start + 1 >= capacity)) {
+        if (isFull() || (this.size + start >= capacity)) {
             resize(capacity * 2);
         }
         data[start + this.size] = element;
