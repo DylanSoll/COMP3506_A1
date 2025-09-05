@@ -277,11 +277,10 @@ public class Problems {
         long bits = 0;
         long s = 0;
         while (s < n) {
-            if ((num = sumIndexes(powers, bits)) < m) {
-                bits++;
-                continue;
+            if ((s = sumIndexes(powers, bits)) >= m && s <= n) {
+                count++;
             }
-            count++;
+            bits++;
         }
         return count;
     }
