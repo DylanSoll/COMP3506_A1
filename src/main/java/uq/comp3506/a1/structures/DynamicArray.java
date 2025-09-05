@@ -414,4 +414,26 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
         data[ixa] = data[ixb];
         data[ixb] = temp;
     }
+
+    @Override
+    public String toString() {
+        String[] strs = new String[size];
+        for (int i = 0; i < size; i++) {
+            strs[i] = data[start + i].toString();
+        }
+        return String.join("", strs);
+    }
+
+    /**
+     * Converts the array to a string, separated by a delimiter
+     * @param delim the delimiter
+     * @return The string of all elements as strings separated by delim
+     */
+    public String toString(String delim) {
+        String[] strs = new String[size];
+        for (int i = 0; i < size; i++) {
+            strs[i] = data[start + i].toString();
+        }
+        return String.join(delim, strs);
+    }
 }
