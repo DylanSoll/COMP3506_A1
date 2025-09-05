@@ -118,6 +118,11 @@ public class TestProblems {
     }
 
     @Test
+    public void testFreakyBasic() {
+        Assert.assertEquals(0, Problems.freakyNumbers(1, 1, 1));
+    }
+
+    @Test
     public void testFreakySimple() {
         Assert.assertEquals(0L, Problems.freakyNumbers(1, 1, 1));
         // 1
@@ -129,6 +134,14 @@ public class TestProblems {
         // 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
         Assert.assertEquals(5, Problems.freakyNumbers(1, 10, 3));
         // 3^0 [1], 3^1 [3], 3^0 + 3^1 [4], 3^2 [9], 3^2 + 3^0 [10]
+    }
+
+    @Test
+    public void testFreakyAdvanced() {
+        Assert.assertEquals(List.of(48, 49).size(), Problems.freakyNumbers(23, 1731, 48));
+        Assert.assertEquals(List.of(48, 49, 2304).size(), Problems.freakyNumbers(23, 2304, 48));
+        Assert.assertEquals(List.of(48, 49, 2304, 2305).size(), Problems.freakyNumbers(23, 2305, 48));
+        Assert.assertEquals(List.of(48, 49, 2304, 2305, 2352).size(), Problems.freakyNumbers(23, 2352, 48));
 
     }
 

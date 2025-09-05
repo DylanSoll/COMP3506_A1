@@ -276,8 +276,8 @@ public class Problems {
      */
     public static long freakyNumbers(long m, long n, long k) {
         DynamicArray<Long> powers = new DynamicArray<>();
-        if (k == 1) {
-            return (m < n) ? (n - m) : 0;
+        if (k == 1L) {
+            return n - m;
         }
         if (m >= n) {
             return 0;
@@ -286,6 +286,7 @@ public class Problems {
         powers.append(k);
         long bits = 1;
         long s = 1;
+        long smallest;
         while (s < m) {
             s = sumIndexes(powers, bits, k);
             if (s < m) {
@@ -298,8 +299,10 @@ public class Problems {
                 bits--;
             }
         }
-        long smallest = bits;
-
+        smallest = (s == m) ? bits - 1 : bits;
+        bits = 1L << (floorLog(bits) + 2);
+        // start at the power of 2 above m
+        s = sumIndexes(powers, bits, k);
         while (s < n) {
             s = sumIndexes(powers, bits, k);
             if (s < n) {
@@ -312,7 +315,7 @@ public class Problems {
                 bits--;
             }
         }
-        return bits - smallest + ((s == n) ? 1 : 0);
+        return bits - smallest;
     }
 
     private static Long pow(long k, long i) {
