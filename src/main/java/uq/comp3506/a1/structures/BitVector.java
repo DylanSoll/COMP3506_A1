@@ -25,7 +25,7 @@ public class BitVector {
      */
     private int len;
 
-    private long unsetMask;
+    private final long unsetMask;
 
     /**
      * We use 'long' instead of 'int' to store elements because it can fit
@@ -195,7 +195,7 @@ public class BitVector {
         }
         long[] copy = new long[len];
         if (dist > 0) {
-            long overflow = 0;
+            long overflow;
             int offset = (int) (dist / BitsPerElement);
             int shift = (int) (dist - ((long) offset * (long) BitsPerElement));
             for (int i = 0; i < len; i++) {
@@ -214,26 +214,21 @@ public class BitVector {
             return;
         }
         dist *= -1;
-        long overflow = 0;
+        long overflow;
         int offset = (int) (dist / BitsPerElement);
         int shift = (int) (dist - ((long) offset * (long) BitsPerElement));
-        for (int i = len - 1; i > 0; i++) {
+        for (int i = len - 1; i > 0; i--) {
             copy[(i - offset) % len] = data[i];
         }
         data = copy;
         overflow = data[0] << (BitsPerElement - shift);
-        for (int i = 0; i < len - 2; i--) {
+        for (int i = 0; i < len - 2; i++) {
             data[i] >>>= shift;
             data[i] |= (data[i + 1] << (BitsPerElement - shift));
         }
         data[len - 1] >>>= shift;
         data[len - 1] |= overflow;
         data[len - 1] &= unsetMask;
-        return;
-    }
-
-    private void shiftLeft(long dist) {
-
     }
 
     /**
@@ -284,6 +279,9 @@ public class BitVector {
         }
     }
 
+    /**
+     * Prints out the contents of the bitvector with each byte separated by a space
+     */
     public void print() {
         for (int i = len - 1; i >= 0; i--) {
             int j = (i == len - 1) ? ((int) (size % BitsPerElement)) - 1 : BitsPerElement - 1;

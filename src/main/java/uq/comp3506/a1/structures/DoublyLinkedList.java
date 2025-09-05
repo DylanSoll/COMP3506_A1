@@ -224,7 +224,7 @@ public class DoublyLinkedList<T> implements ListInterface<T> {
             this.clear();
             return old;
         }
-        if ((idx != 0 ) && (idx + 1 != size)) {
+        if (idx != 0  && (idx + 1 != size)) {
             return null;
         }
         size--;
@@ -277,6 +277,7 @@ public class DoublyLinkedList<T> implements ListInterface<T> {
         return cur;
     }
 
+    @Override
     public String toString() {
         String[] out = new String[size];
         Node cur = head;

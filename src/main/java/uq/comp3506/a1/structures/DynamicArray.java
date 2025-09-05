@@ -39,7 +39,7 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
      * Constructs an empty Dynamic Array
      */
     public DynamicArray() {
-        clear(); // clear reinitialises the array to its default initial parameters
+        clear(); // clear resets the array to its default initial parameters
     }
 
     // See ListInterface
@@ -134,8 +134,9 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
         int pos = ix + start;
         if (ix <= (this.size / 2)) {
             if (isStartFull()) {
-                resize(capacity * 2);
-                pos = ix + start;
+                if (resize(capacity * 2)) {
+                    pos = ix + start;
+                }
             }
             for (int i = --start; i < pos; i++) {
                 data[i] = data[i + 1];
@@ -297,42 +298,38 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
         }
     }
 
+    /**
+     * Prints out the array in form [e_0, e_1, ..., e_(size-1)] where e_x is an element
+     * in the dynamic array
+     */
     public void print() {
         System.out.print("[");
-        for (int i = 0; i < this.size; i++) {
-            if (i != 0) {
-                System.out.print(", ");
-            }
-            System.out.print(data[start + i]);
-        }
+        System.out.print(toString(", "));
         System.out.print("]\n");
     }
 
-    public static void main(String[] args) {
-        DynamicArray<Integer> arr = new DynamicArray<>();
-        for (int i = 0; i < 20; i++) {
-            arr.append(i * 3 - 1);
-        }
-        arr.print();
-        for (int i = 0; i < 10; i++) {
-            System.out.println(arr.remove(0));
-            arr.print();
-        }
-        for (int i = 0; i < 10; i++) {
-            System.out.println(arr.remove(arr.size() - 1));
-            arr.print();
-        }
-        arr.print();
-    }
 
+    /**
+     * Checks to see if the start of the array is at index 0
+     * @return true if start == 0
+     */
     private boolean isStartFull() {
         return start == 0;
     }
 
+    /**
+     * Checks to see if data[size - 1] has a value stored
+     * @return true if this.size + start == capacity
+     */
     private boolean isEndFull() {
         return this.size + start == capacity;
     }
 
+    /**
+     * Performs an in place quick sort on the array, between the indices low and high
+     * @param low the lower bound to sort between
+     * @param high the higher bound to sort between
+     */
     private void quickSort(int low, int high) {
         if (high <= low) {
             return;
@@ -366,8 +363,11 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
         }
     }
 
+    /**
+     * Checks to see if the array is sorted
+     * @return true if every element in the Dynamic array is weakly increasing
+     */
     public boolean isSorted() {
-
         if (isEmpty()) {
             return true;
         }
@@ -376,6 +376,7 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
             if (data[i].compareTo(prev) < 0) {
                 return false;
             }
+            prev = data[i];
         }
         return true;
     }
@@ -417,11 +418,11 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
 
     @Override
     public String toString() {
-        String[] strs = new String[size];
+        String[] strings = new String[size];
         for (int i = 0; i < size; i++) {
-            strs[i] = data[start + i].toString();
+            strings[i] = data[start + i].toString();
         }
-        return String.join("", strs);
+        return String.join("", strings);
     }
 
     /**
@@ -430,10 +431,10 @@ public class DynamicArray<T extends Comparable<T>> implements ListInterface<T> {
      * @return The string of all elements as strings separated by delim
      */
     public String toString(String delim) {
-        String[] strs = new String[size];
+        String[] strings = new String[size];
         for (int i = 0; i < size; i++) {
-            strs[i] = data[start + i].toString();
+            strings[i] = data[start + i].toString();
         }
-        return String.join(delim, strs);
+        return String.join(delim, strings);
     }
 }

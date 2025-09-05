@@ -17,7 +17,7 @@ public class TestDynamicArray {
     private static void areContentsEqual(List<?> testArr, DynamicArray<?> arr) {
         Assert.assertEquals(testArr.size(), arr.size());
         for (int i = 0; i < testArr.size(); i++) {
-            Assert.assertTrue(arr.get(i).equals(testArr.get(i)));
+            Assert.assertEquals(testArr.get(i), arr.get(i));
         }
     }
 
@@ -25,12 +25,8 @@ public class TestDynamicArray {
     public void TestSize() {
         int size = 150;
         DynamicArray<Integer> arr = new DynamicArray<>();
-        ArrayList<Integer> testArr = new ArrayList<>(60);
         Stream.generate(rand::nextInt)
-                .limit(size).forEach((x) -> {
-                    arr.append(x);
-                    testArr.add(x);
-                });
+                .limit(size).forEach(arr::append);
         Assert.assertEquals(size, arr.size());
     }
 
@@ -44,6 +40,7 @@ public class TestDynamicArray {
                     arr.append(x);
                     testArr.add(x);
         });
+        arr.print();
         areContentsEqual(testArr, arr);
     }
 
@@ -95,9 +92,9 @@ public class TestDynamicArray {
         // ensures get returns the correct element and have the same size
         areContentsEqual(testArr, arr);
         int currSize = testArr.size();
-        int testIndices[] = {-1, currSize, currSize + 1, currSize * currSize};
+        int[] testIndices = {-1, currSize, currSize + 1, currSize * currSize};
         for (int ix: testIndices) {
-            Assert.assertThrows(IndexOutOfBoundsException.class, () -> {arr.get(ix);});
+            Assert.assertThrows(IndexOutOfBoundsException.class, () -> arr.get(ix));
         }
     }
 
@@ -130,11 +127,9 @@ public class TestDynamicArray {
         DynamicArray<Integer> arr = new DynamicArray<>();
         ArrayList<Integer> testArr = new ArrayList<>();
 
-        Stream.generate(() -> {return rand.nextInt(50);})
+        Stream.generate(() -> rand.nextInt(50))
                 .limit(size).forEach((x) -> {
-                    Stream<Integer> ixGen = Stream.generate(()-> {
-                        return rand.nextInt(0, testArr.size() + 1);
-                    });
+                    Stream<Integer> ixGen = Stream.generate(()-> rand.nextInt(0, testArr.size() + 1));
                     int ix = ixGen.iterator().next();
 
                     testArr.add(ix, x);
@@ -151,7 +146,7 @@ public class TestDynamicArray {
             int size = 100 * i;
             DynamicArray<Integer> arr = new DynamicArray<>();
             ArrayList<Integer> testArr = new ArrayList<>();
-            Stream.generate(() -> {return rand.nextInt(50);})
+            Stream.generate(() -> rand.nextInt(50))
                     .limit(size).forEach((x) -> {
                         arr.append(x);
                         testArr.add(x);
@@ -173,35 +168,53 @@ public class TestDynamicArray {
     @Test
     public void testSort() {
         DynamicArray<Integer> arr = new DynamicArray<>();
-        ArrayList<Integer> tarr = new ArrayList<>();
+        ArrayList<Integer> testArr = new ArrayList<>();
         for (int x : List.of(0, 1, 5, 7, 12, 1, 5, 2, 1, 6, 2, 6, 3, 6)) {
             arr.append(x);
-            tarr.add(x);
+            testArr.add(x);
         }
-        tarr.sort(Integer::compareTo);
+        testArr.sort(Integer::compareTo);
         arr.sort();
-        areContentsEqual(tarr, arr);
+        areContentsEqual(testArr, arr);
     }
 
     @Test
     public void testSortSimple() {
         DynamicArray<Integer> arr = new DynamicArray<>();
-        ArrayList<Integer> tarr = new ArrayList<>();
+        ArrayList<Integer> testArr = new ArrayList<>();
         for (int x : List.of(4,5,-1, -2, 0,1,2,3,6,7,12,11,9,8,10,13)) {
             arr.append(x);
-            tarr.add(x);
+            testArr.add(x);
         }
-        areContentsEqual(tarr, arr);
+        testArr.sort(Integer::compareTo);
+        arr.sort();
+        areContentsEqual(testArr, arr);
     }
 
     @Test
     public void testSortRand() {
         DynamicArray<Integer> arr = new DynamicArray<>();
-        ArrayList<Integer> tarr = new ArrayList<>();
+        ArrayList<Integer> testArr = new ArrayList<>();
         Stream.generate(rand::nextInt).limit(200).forEach((x) -> {
             arr.append(x);
-            tarr.add(x);
+            testArr.add(x);
         });
-        areContentsEqual(tarr, arr);
+        testArr.sort(Integer::compareTo);
+        arr.sort();
+        areContentsEqual(testArr, arr);
+    }
+
+    @Test
+    public void testSortRandLarge() {
+        DynamicArray<Integer> arr = new DynamicArray<>();
+        ArrayList<Integer> testArr = new ArrayList<>();
+        Stream.generate(rand::nextInt).limit(20000).forEach((x) -> {
+            arr.append(x);
+            testArr.add(x);
+        });
+        testArr.sort(Integer::compareTo);
+        arr.sort();
+        areContentsEqual(testArr, arr);
+        Assert.assertTrue(arr.isSorted());
     }
 }
