@@ -113,8 +113,12 @@ public class DNAStructure {
      */
     public int countRepeats(int k) {
         if (k <= 1 || k > 13 || k < window.size()) {
-            return 0; // inp is bounded
+            return 0; // input is bounded
         }
+        String s = stringify();
+        int count = 0;
+
+
         return 0;
     }
 
@@ -125,13 +129,17 @@ public class DNAStructure {
      * Again, k will be in the range [2, 100], and 2 <= k <= w
      */
     public boolean hasPalindrome(int k) {
+        int last = 0;
+        for (int i = 0; i < window.size() - k; i++) {
+
+        }
         for (int startIx = 0; startIx < window.size() - k; startIx++) {
             for (int palIx = 0; palIx < k / 2; palIx++) {
                 if (!isComplement(window.get(startIx + palIx),
                         window.get(startIx + k - palIx - 1))) {
                     break;
                 }
-                if (palIx + 1 == k / 2) {
+                if (palIx + 1 >= k / 2) {
                     return true;
                 }
             }

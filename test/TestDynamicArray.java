@@ -141,6 +141,28 @@ public class TestDynamicArray {
     }
 
     @Test
+    public void TestAddRepeat() {
+        int size = 32;
+        for (int i = 0; i < 1000; i++) {
+            System.out.println(i);
+            DynamicArray<Integer> arr = new DynamicArray<>();
+            ArrayList<Integer> testArr = new ArrayList<>();
+
+            Stream.generate(() -> rand.nextInt(50))
+                    .limit(size).forEach((x) -> {
+                        Stream<Integer> ixGen = Stream.generate(()-> rand.nextInt(0, testArr.size() + 1));
+                        int ix = ixGen.iterator().next();
+
+                        testArr.add(ix, x);
+                        arr.add(ix, x);
+
+                    });
+            areContentsEqual(testArr, arr);
+        //arr.print();
+        }
+    }
+
+    @Test
     public void TestRemoveFirst() {
         for (int i = 1; i <= 10; i++) {
             int size = 100 * i;

@@ -357,7 +357,25 @@ public class Problems {
      * k will be up to 100
      */
     public static long lifeIsSweet(int m, int n, int k) {
-
-        return -1;
+        if (m == 0 || n == 0) {
+            return 0;
+        }
+        if (k == m) {
+            return m;
+        }
+        if (k == n) {
+            return n;
+        }
+        long cost = 0;
+        int area = m * n;
+        int div = area / k;
+        int rem = area % k;
+        if (k < m && m <= n) {
+            return ((long) m * (n - div)) + lifeIsSweet(m, n - div, k);
+        }
+        if (k < n && m <= n) {
+            return ((long) n * (m - div)) + lifeIsSweet(m - div, n, k);
+        }
+        return cost;
     }
 }
